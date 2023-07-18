@@ -1,2 +1,2 @@
-# A Kubernetes CLI to automate and simplify quick, iterarive changes 
+# A Kubernetes CLI to automate and simplify quick, iterative changes 
 A full fledged Kubernetes CLI
