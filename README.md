@@ -4,10 +4,10 @@ A full fledged Kubernetes CLI. As of now, it can parse pods, namespaces and meta
 
 ## TODO ##
 - _Makefile_
-_- Deployment
-- Tests
-- Nodes_
-
+- _Deployment_
+- _Tests_
+- _Nodes_
+  
 ## Usage ##
 
 ### Manual ###
