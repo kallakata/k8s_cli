@@ -9,5 +9,5 @@ A full fledged Kubernetes CLI. As of now, can parse pods, namespaces and metadat
 $ go build
 $ ./app
 $ ./app [PROMPTS]
-$ ./[PARSER] --help
+$ ./app --help
 ```
