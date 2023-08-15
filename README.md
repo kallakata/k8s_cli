@@ -14,6 +14,6 @@ A full fledged Kubernetes CLI. As of now, it can parse pods, namespaces and meta
 ```console
 $ go build
 $ ./app
-$ ./app [PROMPTS]
+$ ./app [COMMANDS] [FLAGS]
 $ ./app --help
 ```
