@@ -1,6 +1,6 @@
 # A Kubernetes CLI to parse Pods, Nodes, Namespaces and metadata
 
-A full fledged Kubernetes CLI. As of now, it can parse pods, namespaces and metadata. More features TBD.
+A full fledged Kubernetes CLI. As of now, it can parse pods, namespaces, clusters and metadata. More features TBD.
 
 ## TODO ##
 - _Makefile_
