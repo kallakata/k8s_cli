@@ -20,7 +20,7 @@ $ ./app --help
 ```console
 $ make build
 $ make install
-$ ./app [COMMANDS] [FLAGS]
+$ make run [COMMANDS] [FLAGS]
 $ ./app --help
 ```
 
