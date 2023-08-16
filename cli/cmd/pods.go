@@ -4,6 +4,9 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 	"github.com/kallakata/k8s_cli/parser"
+	// "github.com/kallakata/k8s_cli/prompt"
+	// tea "github.com/charmbracelet/bubbletea"
+	// "log"
 )
 
 // podsCmd represents the pods command
@@ -15,6 +18,11 @@ var podsCmd = &cobra.Command{
 		ns := cmd.Flags().Lookup("namespace").Value.String()
 		ctx := cmd.Flags().Lookup("context").Value.String()
 
+		// var nsx prompt.Namespace
+		// p := tea.NewProgram(prompt.InitialModel())
+		// 	if _, err := p.Run(); err != nil {
+		// 	log.Fatal(err)
+		// }
 		parser.ListPods(ns, ctx)
 		// if ctx != "" && ns != "" {
 		// 	parser.ListPods(ns, ctx)
