@@ -10,7 +10,7 @@ A full fledged Kubernetes CLI. As of now, it can parse pods, namespaces, cluster
 
 ### Manual ###
 ```console
-$ go build/go install
+$ go build . && go install
 $ ./app
 $ ./app [COMMANDS] [FLAGS]
 $ ./app --help
