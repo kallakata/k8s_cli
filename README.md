@@ -2,7 +2,7 @@
 
 A full fledged Kubernetes CLI. As of now, it can parse Pods, Namespaces, Clusters and metadata. Output can be customized.
 
-**More features TBD.**
+**More features TBD.**.
 
 ## TODO ##
 - _Deployment_
