@@ -21,6 +21,11 @@ $ ./app --help
 $ make build
 $ make install
 $ make run [COMMANDS] [FLAGS]
-$ ./app --help
+$ make run --help
+```
+
+### If you want to use new packages ###
+```console
+$ make vendor
 ```
 
