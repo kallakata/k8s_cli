@@ -15,3 +15,12 @@ $ ./app
 $ ./app [COMMANDS] [FLAGS]
 $ ./app --help
 ```
+
+### Make ###
+```console
+$ make build
+$ make install
+$ ./app [COMMANDS] [FLAGS]
+$ ./app --help
+```
+
