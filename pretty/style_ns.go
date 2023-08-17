@@ -79,7 +79,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, tea.Batch(cmds...)
 }
 
-func (m Model) View() string {
+func (m Model) NsView() string {
 	body := strings.Builder{}
 
 	body.WriteString("List of namespaces in context.\n\n" +

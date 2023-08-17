@@ -90,7 +90,7 @@ func (m Model) PodsUpdate(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, tea.Batch(cmds...)
 }
 
-func (m Model) PodsView() string {
+func (m Model) View() string {
 	body := strings.Builder{}
 
 	body.WriteString("List of Pods in namespace and context.\n\n" +

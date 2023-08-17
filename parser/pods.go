@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"github.com/kallakata/k8s_cli/model"
 	"github.com/kallakata/k8s_cli/pretty"
+	"github.com/kallakata/k8s_cli/prompt"
 	"k8s.io/client-go/tools/clientcmd"
 	"time"
 )
@@ -67,9 +68,30 @@ func ListPods(ns string, ctx string) ([]model.Pod, *kubernetes.Clientset, error)
 	// }
 
 	p := tea.NewProgram(pretty.NewPodsModel(items, ctx, ns))
-	fmt.Printf("========== Getting pods ==========\n\n")
+	fmt.Printf("\n\n========== Getting pods ==========\n\n")
 	time.Sleep(2 * time.Second)
 	p.Run()
 
 	return items, clientset, nil
+}
+
+func ListPodsUsingPrompt(ctx string) ([]model.Pod, *kubernetes.Clientset, error) {
+
+	// Create a new prompt model and run it
+	promptModel := prompt.InitialModel()
+	promptProgram := tea.NewProgram(promptModel)
+	resultMsg, _ := promptProgram.Run()
+
+	// Check if the result message is a model with a GetNamespace method
+	if namespaceModel, ok := resultMsg.(interface{ GetNamespace() string }); ok {
+		ns := namespaceModel.GetNamespace()
+		ctx := ctx // Replace with the appropriate context
+		pods, clientset, err := ListPods(ns, ctx)
+		if err != nil {
+			return nil, nil, err
+		}
+		return pods, clientset, nil
+	}
+
+	return nil, nil, fmt.Errorf("failed to get namespace from prompt")
 }

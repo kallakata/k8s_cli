@@ -4,26 +4,26 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 	"github.com/kallakata/k8s_cli/parser"
-	// "github.com/kallakata/k8s_cli/prompt"
-	// tea "github.com/charmbracelet/bubbletea"
-	// "log"
+	"github.com/fatih/color"
+	"os"
 )
 
 // podsCmd represents the pods command
 var podsCmd = &cobra.Command{
 	Use:     "list-pods",
 	Aliases: []string{"pods"},
-	Short:   "Lists pods",
+	Short:   "Lists Pods in context",
 	Run: func(cmd *cobra.Command, args []string) {
-		ns := cmd.Flags().Lookup("namespace").Value.String()
+		// ns := cmd.Flags().Lookup("namespace").Value.String()
 		ctx := cmd.Flags().Lookup("context").Value.String()
-
-		// var nsx prompt.Namespace
-		// p := tea.NewProgram(prompt.InitialModel())
-		// 	if _, err := p.Run(); err != nil {
-		// 	log.Fatal(err)
-		// }
-		parser.ListPods(ns, ctx)
+		if len(ctx) == 0 {
+			color.Red("\nNo context specified!\n\n")
+            cmd.Help()
+            os.Exit(0)
+        } else {
+		parser.ListPodsUsingPrompt(ctx)
+		}
+		// parser.ListPods(ns, ctx)
 		// if ctx != "" && ns != "" {
 		// 	parser.ListPods(ns, ctx)
 		// 	} else if ns == "" {
@@ -47,5 +47,4 @@ func init() {
 	// is called directly, e.g.:
 	// podsCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	podsCmd.Flags().String("context", "", "A context to list in")
-	podsCmd.Flags().String("namespace", "", "A namespace to list in")
 }

@@ -5,7 +5,7 @@ package prompt
 
 import (
 	"fmt"
-
+	"os"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -16,8 +16,11 @@ type (
 
 type model struct {
 	textInput textinput.Model
+	namespace string
 	err       error
 }
+
+type NamespaceMsg string
 
 func InitialModel() model {
 	ti := textinput.New()
@@ -42,7 +45,16 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.Type {
-		case tea.KeyEnter, tea.KeyCtrlC, tea.KeyEsc:
+		case tea.KeyEnter:
+			// Capture the entered namespace and return it as a new model
+			namespace := m.textInput.Value()
+			return model{
+				textInput: m.textInput,
+				namespace: namespace,
+				err:       nil,
+			}, tea.Quit
+		case tea.KeyCtrlC, tea.KeyEsc:
+			os.Exit(1)
 			return m, tea.Quit
 		}
 
@@ -57,12 +69,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
-	var Namespace string
-	fmt.Scanf("%s", &Namespace)
-	fmt.Sprintf(
-		"Which namespace do you want to list in?\n\n%s\n\n%s",
+	return fmt.Sprintf(
+		"Which namespace do you want to list in?\n\n%s\n\nPress Enter for all namespaces\n%s",
 		m.textInput.View(),
 		"(esc to quit)\n",
-	 )
-	 return Namespace
+	)
+}
+
+func (m model) GetNamespace() string {
+	return m.namespace
 }
