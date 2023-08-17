@@ -18,10 +18,16 @@ $ ./app [COMMANDS] [FLAGS]
 $ ./app --help
 ```
 
+### Install binary ###
+```console
+$ make build
+$ make run [COMMANDS] [FLAGS]
+$ make run --help
+```
+
 ### Make ###
 ```console
 $ make build
-$ make install
 $ make run [COMMANDS] [FLAGS]
 $ make run --help
 ```
