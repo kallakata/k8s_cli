@@ -21,7 +21,6 @@ $ ./app --help
 ### Install binary ###
 ```console
 $ go install .
-
 ```
 
 ### Make ###
