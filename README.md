@@ -20,9 +20,7 @@ $ ./app --help
 
 ### Install binary ###
 ```console
-$ make build
-$ make run [COMMANDS] [FLAGS]
-$ make run --help
+$ go install .
 ```
 
 ### Make ###
