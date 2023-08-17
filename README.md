@@ -4,6 +4,7 @@ A full fledged Kubernetes CLI. As of now, it can parse _Pods, Namespaces, Cluste
 
 **More features TBD.**
 
+
 ## TODO ##
 - _Deployment_
 - _Nodes_/_Nodepools_
