@@ -14,23 +14,18 @@ var podsCmd = &cobra.Command{
 	Aliases: []string{"pods"},
 	Short:   "Lists Pods in context",
 	Run: func(cmd *cobra.Command, args []string) {
-		// ns := cmd.Flags().Lookup("namespace").Value.String()
 		ctx := cmd.Flags().Lookup("context").Value.String()
+		ns := cmd.Flags().Lookup("namespace").Value.String()
+
 		if len(ctx) == 0 {
 			color.Red("\nNo context specified!\n\n")
             cmd.Help()
             os.Exit(0)
-        } else {
+        } else if len(ns) != 0 {
+			parser.ListPods(ns, ctx)
+		} else {
 		parser.ListPodsUsingPrompt(ctx)
 		}
-		// parser.ListPods(ns, ctx)
-		// if ctx != "" && ns != "" {
-		// 	parser.ListPods(ns, ctx)
-		// 	} else if ns == "" {
-		// 		parser.ListPods("", ctx)
-		// 	} else {
-		// 		fmt.Printf("Please specify a context")
-		// 	}
 	},
 }
 
@@ -47,4 +42,5 @@ func init() {
 	// is called directly, e.g.:
 	// podsCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	podsCmd.Flags().String("context", "", "A context to list in")
+	podsCmd.Flags().String("namespace", "", "(Optional) A namespace to list in")
 }

@@ -10,3 +10,10 @@ type Pod struct {
     Namespace string
     Context string
 }
+
+type Cluster struct {
+    Cluster string
+	Status string
+    Version string
+    Endpoint string
+}

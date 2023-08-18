@@ -3,44 +3,55 @@ package parser
 import (
 	"context"
 	"fmt"
-	"log"
-
-	// "github.com/jedib0t/go-pretty/v6/table"
-	// "github.com/jedib0t/go-pretty/v6/text"
-	// "golang.org/x/oauth2/google"
-	container "google.golang.org/api/container/v1"
+	"time"
+	container "cloud.google.com/go/container/apiv1"
+	containerpb "cloud.google.com/go/container/apiv1/containerpb"
+	"github.com/kallakata/k8s_cli/model"
+	"github.com/kallakata/k8s_cli/pretty"
+	tea "github.com/charmbracelet/bubbletea"
 )
 
-// var globalClient kubernetes.Interface
-
-
-func ListClusters(projectID, zone string) error {
+func ListClusters(projectID, zone string) ([]model.Cluster, error) {
 	ctx := context.Background()
-	// hc, err := google.DefaultClient(ctx, container.CloudPlatformScope)
-	// if err != nil {
-	// 	log.Fatalf("Could not get authenticated client: %v", err)
-	// }
 
-	svc, err := container.NewService(ctx)
+	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
-		log.Fatalf("Could not initialize gke client: %v", err)
+		return nil, fmt.Errorf("Could not initialize gke client: %v", err)
 	}
 
-	list, err := svc.Projects.Zones.Clusters.List(projectID, zone).Do()
-	if err != nil {
-		return fmt.Errorf("failed to list clusters: %w", err)
-	}
-	for _, v := range list.Clusters {
-		fmt.Printf("Cluster %q (%s) master_version: v%s", v.Name, v.Status, v.CurrentMasterVersion)
+    defer c.Close()
 
-		poolList, err := svc.Projects.Zones.Clusters.NodePools.List(projectID, zone, v.Name).Do()
-		if err != nil {
-			return fmt.Errorf("failed to list node pools for cluster %q: %w", v.Name, err)
-		}
-		for _, np := range poolList.NodePools {
-			fmt.Printf("  -> Pool %q (%s) machineType=%s node_version=v%s autoscaling=%v", np.Name, np.Status,
-				np.Config.MachineType, np.Version, np.Autoscaling != nil && np.Autoscaling.Enabled)
-		}
-	}
-	return nil
+    req := &containerpb.ListClustersRequest{
+        ProjectId: projectID,
+        Zone:      zone,
+    }
+    resp, err := c.ListClusters(ctx, req)
+    if err != nil {
+        return nil, fmt.Errorf("Error listing clusters: %v", err)
+    }
+
+	var items []model.Cluster
+    for _, c := range resp.Clusters {
+        item := model.Cluster{
+            Cluster: c.Name,
+			Status: string(c.Status),
+			Version: c.CurrentMasterVersion,
+			Endpoint: string(c.Endpoint),
+        }
+        items = append(items, item)
+    }
+
+	p := tea.NewProgram(pretty.NewClustersModel(items))
+	fmt.Printf("========== Getting clusters ==========\n\n")
+	time.Sleep(2 * time.Second)
+	p.Run()
+
+    for _, cluster := range resp.Clusters {
+        fmt.Printf("Cluster Name: %s\n", cluster.Name)
+		fmt.Printf("Cluster Status: %s\n", cluster.Status)
+		fmt.Printf("Cluster Version: %s\n", cluster.CurrentMasterVersion)
+        fmt.Printf("Cluster Endpoint: %s\n", cluster.Endpoint)
+        fmt.Println("----------------------")
+    }
+    return items, nil
 }
