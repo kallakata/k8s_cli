@@ -36,7 +36,7 @@ func NewPodsModel(items []model.Pod, ctx string, ns string) Model {
 			Foreground(lipgloss.Color("#ff0")).
 			Align(lipgloss.Center)),
 		table.NewColumn(columnKeyCtx, "Context", 30).
-			WithFiltered(true).
+			WithFiltered(false).
 			WithStyle(lipgloss.NewStyle().
 			Faint(true).
 			Align(lipgloss.Center)),

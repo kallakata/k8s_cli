@@ -2,20 +2,26 @@
 package cmd
 
 import (
-	// "fmt"
-	// "github.com/kallakata/k8s_cli/auth"
+	"os"
+	"github.com/fatih/color"
 	"github.com/kallakata/k8s_cli/parser"
 	"github.com/spf13/cobra"
 )
 
-// namespacesCmd represents the namespaces command
 var namespacesCmd = &cobra.Command{
 	Use:     "list-namespaces",
 	Aliases: []string{"ns"},
 	Short:   "List namespaces",
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := cmd.Flags().Lookup("context").Value.String()
-		parser.ListNamespaces(ctx)
+
+		if len(ctx) == 0 {
+			color.Red("\nNo context specified!\n\n")
+            cmd.Help()
+            os.Exit(0)
+        } else {
+			parser.ListNamespaces(ctx)
+		}
 	},
 }
 

@@ -14,8 +14,6 @@ import (
 	"time"
 )
 
-// var globalClient kubernetes.Interface
-
 func ListNamespaces(ctx string) ([]model.Ns, *kubernetes.Clientset, error) {
 	userHomeDir, err := os.UserHomeDir()
 	if err != nil {
@@ -49,14 +47,7 @@ func ListNamespaces(ctx string) ([]model.Ns, *kubernetes.Clientset, error) {
         }
         items = append(items, item)
     }
-	// for _, namespace := range namespaces.Items {
-	// 	// fmt.Println(namespace.Name)
-	// 	rows := []table.Row{
-	// 		{namespace.Name},
-	// 	}
-	// 	rows = rows
-	// }
-	
+
 	p := tea.NewProgram(pretty.NewNsModel(items, ctx))
 	fmt.Printf("========== Getting namespaces ==========\n\n")
 	time.Sleep(2 * time.Second)

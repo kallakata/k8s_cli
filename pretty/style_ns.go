@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	columnKeyNamespace       = "namespace"
-	columnKeyContext = "context"
+	columnKeyNamespace  = "namespace"
+	columnKeyContext 	= "context"
 )
 
 type Model struct {
@@ -21,13 +21,13 @@ type Model struct {
 
 func NewNsModel(items []model.Ns, ctx string) Model {
 	columns := []table.Column{
-		table.NewColumn(columnKeyNamespace, "Namespace", 70).
+		table.NewColumn(columnKeyNamespace, "Namespace", 40).
 			WithFiltered(true).
 			WithStyle(lipgloss.NewStyle().
 			Foreground(lipgloss.Color("#ff0")).
 			Align(lipgloss.Center)),
-		table.NewColumn(columnKeyContext, "Context", 70).
-			WithFiltered(true).
+		table.NewColumn(columnKeyContext, "Context", 50).
+			WithFiltered(false).
 			WithStyle(lipgloss.NewStyle().
 			Faint(true).
 			Align(lipgloss.Center)),
