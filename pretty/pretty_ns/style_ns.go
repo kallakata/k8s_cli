@@ -1,44 +1,44 @@
-package pretty
+package pretty_ns
 
 import (
 	// "log"
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/evertras/bubble-table/table"
 	"github.com/kallakata/k8s_cli/model"
-	"github.com/charmbracelet/lipgloss"
 )
 
 const (
-	columnKeyNamespace  = "namespace"
-	columnKeyContext 	= "context"
+	columnKeyNamespace = "namespace"
+	columnKeyContext   = "context"
 )
 
 type Model struct {
 	table table.Model
 }
 
-func NewNsModel(items []model.Ns, ctx string) Model {
+func NewModel(items []model.Ns, ctx string) Model {
 	columns := []table.Column{
 		table.NewColumn(columnKeyNamespace, "Namespace", 40).
 			WithFiltered(true).
 			WithStyle(lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#ff0")).
-			Align(lipgloss.Center)),
+				Foreground(lipgloss.Color("#ff0")).
+				Align(lipgloss.Center)),
 		table.NewColumn(columnKeyContext, "Context", 50).
 			WithFiltered(false).
 			WithStyle(lipgloss.NewStyle().
-			Faint(true).
-			Align(lipgloss.Center)),
+				Faint(true).
+				Align(lipgloss.Center)),
 	}
 
 	var rows []table.Row
 
 	for _, item := range items {
 		rowData := table.RowData{
-			columnKeyNamespace:  item.Namespace,
-			columnKeyContext: ctx,
+			columnKeyNamespace: item.Namespace,
+			columnKeyContext:   ctx,
 		}
 		row := table.NewRow(rowData)
 		rows = append(rows, row)
@@ -79,7 +79,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, tea.Batch(cmds...)
 }
 
-func (m Model) NsView() string {
+func (m Model) View() string {
 	body := strings.Builder{}
 
 	body.WriteString("List of namespaces in context.\n\n" +
