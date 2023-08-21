@@ -2,6 +2,8 @@
 
 A full fledged Kubernetes CLI. As of now, it can parse _Pods, Namespaces, Clusters_ and _metadata._ Output can be customized, default is with a prompt and table.
 
+Refer to the official Google docs for more extensive metadata parsing.
+
 **More features TBD.**
 
 ## TODO ##
@@ -34,3 +36,8 @@ $ make run --help
 $ make vendor
 ```
 
+### Test & format ###
+```console
+$ make fmt
+$ make test
+```
