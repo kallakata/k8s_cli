@@ -24,5 +24,5 @@ fmt:
 tools:
 	$(GOCMD) get golang.org/x/lint/golint
 
-vet:
+test:
 	$(GOCMD) vet -v ./...
