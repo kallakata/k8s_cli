@@ -24,9 +24,15 @@ $ ./app --help
 $ go install .
 ```
 
-### Make ###
+### Build ###
 ```console
 $ make build
+$ cd ./bin
+$ ./kubeparser [ARGUMENTS] [FLAGS]
+```
+
+### Run ###
+```console
 $ make run [COMMANDS] [FLAGS]
 $ make run --help
 ```
