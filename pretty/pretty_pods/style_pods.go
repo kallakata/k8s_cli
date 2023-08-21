@@ -1,4 +1,4 @@
-package pretty
+package pretty_pods
 
 import (
 	// "log"
@@ -17,29 +17,33 @@ const (
 	columnKeyCtx    = "context"
 )
 
-func NewPodsModel(items []model.Pod, ctx string, ns string) Model {
+type Model struct {
+	table table.Model
+}
+
+func NewModel(items []model.Pod, ctx string, ns string) Model {
 
 	columns := []table.Column{
 		table.NewColumn(columnKeyPod, "Pod", 40).
 			WithFiltered(true).
 			WithStyle(lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#ff0")).
-			Align(lipgloss.Center)),
+				Foreground(lipgloss.Color("#ff0")).
+				Align(lipgloss.Center)),
 		table.NewColumn(columnKeyStatus, "Status", 15).
 			WithFiltered(true).
 			WithStyle(lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#8c8")).
-			Align(lipgloss.Center)),
+				Foreground(lipgloss.Color("#8c8")).
+				Align(lipgloss.Center)),
 		table.NewColumn(columnKeyNs, "Namespace", 15).
 			WithFiltered(true).
 			WithStyle(lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#ff0")).
-			Align(lipgloss.Center)),
+				Foreground(lipgloss.Color("#ff0")).
+				Align(lipgloss.Center)),
 		table.NewColumn(columnKeyCtx, "Context", 30).
 			WithFiltered(false).
 			WithStyle(lipgloss.NewStyle().
-			Faint(true).
-			Align(lipgloss.Center)),
+				Faint(true).
+				Align(lipgloss.Center)),
 	}
 
 	var rows []table.Row
@@ -65,11 +69,11 @@ func NewPodsModel(items []model.Pod, ctx string, ns string) Model {
 	}
 }
 
-func (m Model) PodsInit() tea.Cmd {
+func (m Model) Init() tea.Cmd {
 	return nil
 }
 
-func (m Model) PodsUpdate(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var (
 		cmd  tea.Cmd
 		cmds []tea.Cmd

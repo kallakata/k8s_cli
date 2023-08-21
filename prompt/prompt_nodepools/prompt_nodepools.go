@@ -1,13 +1,13 @@
-package prompt
+package prompt_nodepools
 
 // A simple program demonstrating the text input component from the Bubbles
 // component library.
 
 import (
 	"fmt"
-	"os"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
+	"os"
 )
 
 type (
@@ -16,15 +16,15 @@ type (
 
 type model struct {
 	textInput textinput.Model
-	namespace string
+	cluster   string
 	err       error
 }
 
-type NamespaceMsg string
+type ClusterMsg string
 
 func InitialModel() model {
 	ti := textinput.New()
-	ti.Placeholder = "namespace"
+	ti.Placeholder = "cluster"
 	ti.Focus()
 	ti.CharLimit = 156
 	ti.Width = 20
@@ -47,10 +47,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.Type {
 		case tea.KeyEnter:
 			// Capture the entered namespace and return it as a new model
-			namespace := m.textInput.Value()
+			cluster := m.textInput.Value()
 			return model{
 				textInput: m.textInput,
-				namespace: namespace,
+				cluster:   cluster,
 				err:       nil,
 			}, tea.Quit
 		case tea.KeyCtrlC, tea.KeyEsc:
@@ -70,12 +70,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m model) View() string {
 	return fmt.Sprintf(
-		"Which namespace do you want to list in?\n\n%s\n\nPress Enter for all namespaces\n%s",
+		"Which cluster do you want to list in?\n\n%s\n\n%s",
 		m.textInput.View(),
 		"(esc to quit)\n",
 	)
 }
 
-func (m model) GetNamespace() string {
-	return m.namespace
+func (m model) GetCluster() string {
+	return m.cluster
 }

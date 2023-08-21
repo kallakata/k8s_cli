@@ -3,15 +3,15 @@ package parser
 import (
 	"context"
 	"fmt"
-	"os"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	tea "github.com/charmbracelet/bubbletea"
-	"k8s.io/client-go/kubernetes"
-	"path/filepath"
 	"github.com/kallakata/k8s_cli/model"
-	"github.com/kallakata/k8s_cli/pretty"
-	"github.com/kallakata/k8s_cli/prompt"
+	"github.com/kallakata/k8s_cli/pretty/pretty_pods"
+	"github.com/kallakata/k8s_cli/prompt/prompt_pods"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
+	"os"
+	"path/filepath"
 	"time"
 )
 
@@ -27,17 +27,17 @@ func ListPods(ns string, ctx string) ([]model.Pod, *kubernetes.Clientset, error)
 	configOverrides := &clientcmd.ConfigOverrides{CurrentContext: ctx}
 
 	kubeConfig, err := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(configLoadingRules, configOverrides).ClientConfig()
-    if err != nil {
-        fmt.Printf("Error getting kubernetes config: %v\n", err)
-        os.Exit(1)
-    }
+	if err != nil {
+		fmt.Printf("Error getting kubernetes config: %v\n", err)
+		os.Exit(1)
+	}
 
 	clientset, err := kubernetes.NewForConfig(kubeConfig)
 
-    if err != nil {
-        fmt.Printf("Error getting kubernetes config: %v\n", err)
-        os.Exit(1)
-    }
+	if err != nil {
+		fmt.Printf("Error getting kubernetes config: %v\n", err)
+		os.Exit(1)
+	}
 
 	pods, err := clientset.CoreV1().Pods(ns).List(context.Background(), metav1.ListOptions{})
 	if err != nil {
@@ -49,25 +49,17 @@ func ListPods(ns string, ctx string) ([]model.Pod, *kubernetes.Clientset, error)
 	}
 
 	var items []model.Pod
-    for _, pod := range pods.Items {
-        item := model.Pod{
-            Pod:  pod.Name,
-			Status: string(pod.Status.Phase),
+	for _, pod := range pods.Items {
+		item := model.Pod{
+			Pod:       pod.Name,
+			Status:    string(pod.Status.Phase),
 			Namespace: ns,
-			Context: ctx,
-        }
-        items = append(items, item)
-    }
+			Context:   ctx,
+		}
+		items = append(items, item)
+	}
 
-	// var message string
-	// if ns == "" {
-	// 	t.AppendFooter(table.Row{"Total pods in namespaces: ", len(pods.Items)})
-	// } else {
-	// 	message = fmt.Sprintf("Total Pods in namespace `%s`", ns)
-	// 	t.AppendFooter(table.Row{message, len(pods.Items)})
-	// }
-
-	p := tea.NewProgram(pretty.NewPodsModel(items, ctx, ns))
+	p := tea.NewProgram(pretty_pods.NewModel(items, ctx, ns))
 	fmt.Printf("\n\n========== Getting pods ==========\n\n")
 	time.Sleep(2 * time.Second)
 	p.Run()
@@ -78,7 +70,7 @@ func ListPods(ns string, ctx string) ([]model.Pod, *kubernetes.Clientset, error)
 func ListPodsUsingPrompt(ctx string) ([]model.Pod, *kubernetes.Clientset, error) {
 
 	// Create a new prompt model and run it
-	promptModel := prompt.InitialModel()
+	promptModel := prompt_pods.InitialModel()
 	promptProgram := tea.NewProgram(promptModel)
 	resultMsg, _ := promptProgram.Run()
 

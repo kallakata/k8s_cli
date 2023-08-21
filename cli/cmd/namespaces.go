@@ -1,11 +1,10 @@
-
 package cmd
 
 import (
-	"os"
 	"github.com/fatih/color"
 	"github.com/kallakata/k8s_cli/parser"
 	"github.com/spf13/cobra"
+	"os"
 )
 
 var namespacesCmd = &cobra.Command{
@@ -17,9 +16,9 @@ var namespacesCmd = &cobra.Command{
 
 		if len(ctx) == 0 {
 			color.Red("\nNo context specified!\n\n")
-            cmd.Help()
-            os.Exit(0)
-        } else {
+			cmd.Help()
+			os.Exit(0)
+		} else {
 			parser.ListNamespaces(ctx)
 		}
 	},

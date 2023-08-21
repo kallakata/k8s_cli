@@ -1,4 +1,4 @@
-package pretty
+package pretty_clusters
 
 import (
 	// "log"
@@ -11,45 +11,49 @@ import (
 )
 
 const (
-	columnKeyCluster    = "cluster"
+	columnKeyCluster       = "cluster"
 	columnKeyClusterStatus = "status"
-	columnKeyVersion    = "version"
-	columnKeyEndpoint    = "endpoint"
+	columnKeyVersion       = "version"
+	columnKeyEndpoint      = "endpoint"
 )
 
-func NewClustersModel(items []model.Cluster) Model {
+type Model struct {
+	table table.Model
+}
+
+func NewModel(items []model.Cluster) Model {
 
 	columns := []table.Column{
 		table.NewColumn(columnKeyCluster, "Cluster", 35).
 			WithFiltered(true).
 			WithStyle(lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#ff0")).
-			Align(lipgloss.Center)),
+				Foreground(lipgloss.Color("#ff0")).
+				Align(lipgloss.Center)),
 		table.NewColumn(columnKeyClusterStatus, "Status", 15).
 			WithFiltered(true).
 			WithStyle(lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#8c8")).
-			Align(lipgloss.Center)),
+				Foreground(lipgloss.Color("#8c8")).
+				Align(lipgloss.Center)),
 		table.NewColumn(columnKeyVersion, "Version", 25).
 			WithFiltered(true).
 			WithStyle(lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#ff0")).
-			Align(lipgloss.Center)),
-		table.NewColumn(columnKeyCtx, "Endpoint", 15).
+				Foreground(lipgloss.Color("#ff0")).
+				Align(lipgloss.Center)),
+		table.NewColumn(columnKeyEndpoint, "Endpoint", 15).
 			WithFiltered(false).
 			WithStyle(lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#ff0")).
-			Align(lipgloss.Center)),
+				Foreground(lipgloss.Color("#ff0")).
+				Align(lipgloss.Center)),
 	}
 
 	var rows []table.Row
 
 	for _, item := range items {
 		rowData := table.RowData{
-			columnKeyCluster:     item.Cluster,
-			columnKeyStatus: 	  item.Status,
-			columnKeyVersion:     item.Version,
-			columnKeyEndpoint:    item.Endpoint,
+			columnKeyCluster:       item.Cluster,
+			columnKeyClusterStatus: item.Status,
+			columnKeyVersion:       item.Version,
+			columnKeyEndpoint:      item.Endpoint,
 		}
 		row := table.NewRow(rowData)
 		rows = append(rows, row)
@@ -65,11 +69,11 @@ func NewClustersModel(items []model.Cluster) Model {
 	}
 }
 
-func (m Model) ClustersInit() tea.Cmd {
+func (m Model) Init() tea.Cmd {
 	return nil
 }
 
-func (m Model) ClustersUpdate(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var (
 		cmd  tea.Cmd
 		cmds []tea.Cmd
@@ -84,13 +88,12 @@ func (m Model) ClustersUpdate(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c", "q":
 			cmds = append(cmds, tea.Quit)
 		}
-
 	}
 
 	return m, tea.Batch(cmds...)
 }
 
-func (m Model) ClustersView() string {
+func (m Model) View() string {
 	body := strings.Builder{}
 
 	body.WriteString("List of Clusters in project and zone.\n\n" +

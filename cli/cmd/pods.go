@@ -1,10 +1,9 @@
-
 package cmd
 
 import (
-	"github.com/spf13/cobra"
-	"github.com/kallakata/k8s_cli/parser"
 	"github.com/fatih/color"
+	"github.com/kallakata/k8s_cli/parser"
+	"github.com/spf13/cobra"
 	"os"
 )
 
@@ -19,12 +18,12 @@ var podsCmd = &cobra.Command{
 
 		if len(ctx) == 0 {
 			color.Red("\nNo context specified!\n\n")
-            cmd.Help()
-            os.Exit(0)
-        } else if len(ns) != 0 {
+			cmd.Help()
+			os.Exit(0)
+		} else if len(ns) != 0 {
 			parser.ListPods(ns, ctx)
 		} else {
-		parser.ListPodsUsingPrompt(ctx)
+			parser.ListPodsUsingPrompt(ctx)
 		}
 	},
 }
