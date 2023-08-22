@@ -11,9 +11,21 @@ type Pod struct {
 	Context   string
 }
 
+type ClusterStatus int
+
+const (
+    StatusUnspecified ClusterStatus = iota
+    Provisioning
+    Running
+    Reconciling
+    Stopping
+    Error
+    Degraded
+)
+
 type Cluster struct {
 	Cluster  string
-	Status   string
+	Status   ClusterStatus
 	Version  string
 	Endpoint string
 }
