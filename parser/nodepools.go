@@ -7,10 +7,10 @@ import (
 	"fmt"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/kallakata/k8s_cli/model"
-	"github.com/kallakata/k8s_cli/pretty/pretty_nodepools"
+	// "github.com/kallakata/k8s_cli/pretty/pretty_nodepools"
 	"github.com/kallakata/k8s_cli/prompt/prompt_nodepools"
-	"log"
-	"time"
+	// "log"
+	// "time"
 )
 
 func ListNodepools(project, zone, cluster string) ([]model.Nodepool, error) {
@@ -33,26 +33,33 @@ func ListNodepools(project, zone, cluster string) ([]model.Nodepool, error) {
 
 	resp, err := c.ListNodePools(ctx, req)
 
+	// for _, np := range resp.NodePools {
+	// 	nodepool := model.Nodepool{
+	// 		Nodepool:    np.Name,
+	// 		Status:      string(np.Status),
+	// 		Version:     np.Version,
+	// 		Autoscaling: np.Autoscaling.Enabled,
+	// 		MinNode:     np.Autoscaling.MinNodeCount,
+	// 		MaxNode:     np.Autoscaling.MaxNodeCount,
+	// 	}
+	// 	nodepools = append(nodepools, nodepool)
+	// }
+
 	for _, np := range resp.NodePools {
-		nodepool := model.Nodepool{
-			Nodepool:    np.Name,
-			Status:      string(np.Status),
-			Version:     np.Version,
-			Autoscaling: np.Autoscaling.Enabled,
-			MinNode:     np.Autoscaling.MinNodeCount,
-			MaxNode:     np.Autoscaling.MaxNodeCount,
-		}
-		nodepools = append(nodepools, nodepool)
+		fmt.Printf("  -> Pool %q (%s) machineType=%s node_version=v%s autoscaling=%v", np.Name, np.Status,
+			np.Config.MachineType, np.Version, np.Autoscaling != nil && np.Autoscaling.Enabled)
 	}
 
-	p := tea.NewProgram(pretty_nodepools.NewModel(nodepools))
-	fmt.Printf("========== Getting nodepools ==========\n\n")
-	time.Sleep(2 * time.Second)
-	defer func() {
-		if _, err := p.Run(); err != nil {
-			log.Printf("Error running Bubble Tea program: %v", err)
-		}
-	}()
+	// fmt.Println(nodepools)
+
+	// p := tea.NewProgram(pretty_nodepools.NewModel(nodepools))
+	// fmt.Printf("========== Getting nodepools ==========\n\n")
+	// time.Sleep(2 * time.Second)
+	// defer func() {
+	// 	if _, err := p.Run(); err != nil {
+	// 		log.Printf("Error running Bubble Tea program: %v", err)
+	// 	}
+	// }()
 
 	return nodepools, nil
 }
@@ -69,6 +76,7 @@ func ListPoolsUsingPrompt(project, zone string) ([]model.Nodepool, error) {
 		cluster := clusterModel.GetCluster()
 		project := project
 		zone := zone
+		fmt.Printf(cluster, project, zone)
 		nodepools, err := ListNodepools(project, zone, cluster)
 		if err != nil {
 			return nil, err
@@ -78,3 +86,4 @@ func ListPoolsUsingPrompt(project, zone string) ([]model.Nodepool, error) {
 
 	return nil, fmt.Errorf("failed to get cluster from prompt")
 }
+
