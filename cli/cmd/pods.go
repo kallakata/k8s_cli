@@ -41,5 +41,5 @@ func init() {
 	// is called directly, e.g.:
 	// podsCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	podsCmd.Flags().String("context", "", "A context to list in")
-	podsCmd.Flags().String("namespace", "", "(Optional) A namespace to list in")
+	podsCmd.Flags().String("namespace", "", "(Optional) A namespace to list in.\nIf missing, you will be prompted")
 }
