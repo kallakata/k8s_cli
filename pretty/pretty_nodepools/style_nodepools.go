@@ -111,8 +111,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m Model) View() string {
 	body := strings.Builder{}
 
-	body.WriteString("List of Clusters in project and zone.\n\n" +
-		"| Currently filter by Cluster, Status and Version, press / + letters to start filtering, and escape to clear filter. |\n| Press q or ctrl+c to quit | \n\n")
+	body.WriteString("List of Nodepools in project, zone and cluster.\n\n" +
+		"| Currently filter by Nodepool, press / + letters to start filtering, and escape to clear filter. |\n| Press q or ctrl+c to quit | \n\n")
 
 	body.WriteString(m.table.View())
 

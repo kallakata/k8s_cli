@@ -1,13 +1,12 @@
 package pretty_clusters
 
 import (
-	// "log"
 	"strings"
-
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/evertras/bubble-table/table"
 	"github.com/kallakata/k8s_cli/model"
+	"github.com/kallakata/k8s_cli/internal/interfaces"
 )
 
 const (
@@ -17,11 +16,62 @@ const (
 	columnKeyEndpoint      = "endpoint"
 )
 
+const (
+	columnKeyNodepool    = "nodepool"
+	columnKeyStatus 	 = "status"
+	columnKeyNpVersion   = "version"
+	columnKeyMinNode     = "minNode"
+	columnKeyMaxNode     = "maxNode"
+	columnKeyAutoscaling = "autoscaling"
+)
+
 type Model struct {
 	table table.Model
+	selectedCluster  model.Cluster
+	showingNodePools bool
+	npf              interfaces.NodePoolsFetcher
+	clusters 		 []model.Cluster
 }
 
-func NewModel(items []model.Cluster) Model {
+type NodePoolsFetcher interface {
+    FetchNodePoolsForCluster(project, zone, clusterName string) ([]model.Nodepool, error)
+}
+
+func (m Model) CreateClusterRows(items []model.Cluster) []table.Row {
+    var rows []table.Row
+    for _, item := range m.clusters {
+        rowData := table.RowData{
+            columnKeyCluster:       item.Cluster,
+            columnKeyClusterStatus: item.Status,
+            columnKeyVersion:       item.Version,
+            columnKeyEndpoint:      item.Endpoint,
+        }
+        row := table.NewRow(rowData)
+        rows = append(rows, row)
+    }
+    return rows
+}
+
+func (m Model) createNodePoolsRows(nodePools []model.Nodepool) []table.Row {
+    var rows []table.Row
+    for _, np := range nodePools {
+        rowData := table.RowData{
+            columnKeyNodepool:       np.Nodepool,
+            columnKeyClusterStatus: np.Status,
+            columnKeyVersion:       np.Version,
+            columnKeyMinNode:      np.MinNode,
+			columnKeyMaxNode:      np.MaxNode,
+			columnKeyAutoscaling: np.Autoscaling,
+        }
+        row := table.NewRow(rowData)
+        rows = append(rows, row)
+    }
+    return rows
+}
+
+var rows []table.Row
+
+func NewModel(items []model.Cluster, npf interfaces.NodePoolsFetcher) Model {
 
 	columns := []table.Column{
 		table.NewColumn(columnKeyCluster, "Cluster", 35).
@@ -42,11 +92,9 @@ func NewModel(items []model.Cluster) Model {
 		table.NewColumn(columnKeyEndpoint, "Endpoint", 15).
 			WithFiltered(false).
 			WithStyle(lipgloss.NewStyle().
-				Foreground(lipgloss.Color("#ff0")).
+				Foreground(lipgloss.Color("#00FFFF")).
 				Align(lipgloss.Center)),
 	}
-
-	var rows []table.Row
 
 	for _, item := range items {
 		rowData := table.RowData{
@@ -66,38 +114,59 @@ func NewModel(items []model.Cluster) Model {
 			Focused(true).
 			WithPageSize(10).
 			WithRows(rows),
+		selectedCluster: model.Cluster{},
+		npf: npf,
+		clusters: items,
 	}
 }
+
+var zone string
+var projectID string
 
 func (m Model) Init() tea.Cmd {
 	return nil
 }
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	var (
-		cmd  tea.Cmd
-		cmds []tea.Cmd
-	)
+    var (
+        cmd  tea.Cmd
+        cmds []tea.Cmd
+    )
 
-	m.table, cmd = m.table.Update(msg)
-	cmds = append(cmds, cmd)
+    m.table, cmd = m.table.Update(msg)
+    cmds = append(cmds, cmd)
 
-	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		switch msg.String() {
-		case "ctrl+c", "q":
-			cmds = append(cmds, tea.Quit)
-		}
-	}
-
-	return m, tea.Batch(cmds...)
-}
+    switch msg := msg.(type) {
+    case tea.KeyMsg:
+        switch msg.String() {
+        case "ctrl+c", "q":
+            cmds = append(cmds, tea.Quit)
+        case "enter":
+                m.selectedCluster = model.Cluster{}
+                m.table = m.table.WithRows(rows) // Update with clusters data
+                m.showingNodePools = true
+                // Fetch node pools using the NodePoolsFetcher instance
+                nodePools, err := m.npf.FetchNodePoolsForCluster(projectID, zone, m.selectedCluster.Cluster)
+                if err != nil {
+                    // Handle error
+                }
+                // Update node pools data in the table
+				m.selectedCluster = model.Cluster{Cluster: m.selectedCluster.Cluster}
+                m.table = m.table.WithRows(m.createNodePoolsRows(nodePools))
+            }
+        }
+		return m, tea.Batch(cmds...)
+    }
 
 func (m Model) View() string {
 	body := strings.Builder{}
 
-	body.WriteString("List of Clusters in project and zone.\n\n" +
-		"| Currently filter by Cluster, Status and Version, press / + letters to start filtering, and escape to clear filter. |\n| Press q or ctrl+c to quit | \n\n")
+	if m.showingNodePools {
+        body.WriteString("List of Node Pools in cluster " + m.selectedCluster.Cluster + "\n\n")
+    } else {
+        body.WriteString("List of Clusters in project and zone.\n\n" + "Status:\n 0 = Unknown\n 1 = Provisioning\n 2 = Running\n 4 = Stopping\n 5 = Error" +
+            "\n\n| Currently filter by Cluster, Status and Version, press / + letters to start filtering, and escape to clear filter. |\n| Press q or ctrl+c to quit | \n\n")
+    }
 
 	body.WriteString(m.table.View())
 
