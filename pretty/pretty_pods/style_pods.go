@@ -2,12 +2,21 @@ package pretty_pods
 
 import (
 	// "log"
-	"strings"
+	// "strings"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/evertras/bubble-table/table"
 	"github.com/kallakata/k8s_cli/model"
+)
+
+var (
+	styleSubtle = lipgloss.NewStyle().Foreground(lipgloss.Color("#ff5733"))
+
+	styleBase = lipgloss.NewStyle().
+			Foreground(lipgloss.Color("#ff5733")).
+			BorderForeground(lipgloss.Color("#ff5733")).
+			Align(lipgloss.Right)
 )
 
 const (
@@ -95,12 +104,23 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) View() string {
-	body := strings.Builder{}
+	// body := strings.Builder{}
 
-	body.WriteString("List of Pods in namespace and context.\n\n" +
-		"| Currently filter by Pod, Status and Namespace, press / + letters to start filtering, and escape to clear filter. |\n| Press q or ctrl+c to quit | \n\n")
+	// body.WriteString("List of Pods in namespace and context.\n\n" +
+	// 	"| Currently filter by Pod, Status and Namespace, press / + letters to start filtering, and escape to clear filter. |\n| Press q or ctrl+c to quit | \n\n")
 
-	body.WriteString(m.table.View())
+	// body.WriteString(m.table.View())
 
-	return body.String()
+	// return body.String()
+
+	selected := m.table.HighlightedRow().Data[columnKeyPod].(string)
+	view := lipgloss.JoinVertical(
+		lipgloss.Left,
+		lipgloss.NewStyle().Foreground(lipgloss.Color("#42d303")).Render("Press q or ctrl+c to quit"),
+		lipgloss.NewStyle().Foreground(lipgloss.Color("#ff5733")).Render("Highlighted: "+selected),
+		lipgloss.NewStyle().Foreground(lipgloss.Color("#03a1d3")).Render("| Currently filter by Pod, Status and Namespace, press / + letters to start filtering, and escape to clear filter. | \n"),
+		m.table.View(),
+	) + "\n"
+
+	return lipgloss.NewStyle().MarginLeft(1).Render(view)
 }
