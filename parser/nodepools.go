@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"github.com/fatih/color"
 	container "cloud.google.com/go/container/apiv1"
 	containerpb "cloud.google.com/go/container/apiv1/containerpb"
 	"context"
@@ -46,8 +47,11 @@ func ListNodepools(project, zone, cluster string) ([]model.Nodepool, error) {
 	// }
 
 	for _, np := range resp.NodePools {
-		fmt.Printf("  -> Pool %q (%s) machineType=%s node_version=v%s autoscaling=%v", np.Name, np.Status,
-			np.Config.MachineType, np.Version, np.Autoscaling != nil && np.Autoscaling.Enabled)
+		color.Magenta("\n-> Pool %q\n", np.Name)
+		color.Magenta("  | version: v%s\n", np.Version)
+		color.Green("  | status: %s\n", np.Status)
+		color.Yellow("  | machineType: %s\n", np.Config.MachineType)
+		color.Yellow("  | autoscaling: %v\n", np.Autoscaling != nil && np.Autoscaling.Enabled)
 	}
 
 	// fmt.Println(nodepools)
