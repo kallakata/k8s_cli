@@ -1,6 +1,8 @@
 # A Kubernetes CLI parser with pretty output 
 
-A full fledged **Kubernetes CLI**. As of now, it can parse _Pods, Namespaces, Clusters_ (in table output), _Nodepools_ (in default output), and partially most important _metadata._ Output can be customized, default is a simple listing, otherwise it is in a form of table + prompt.
+A full fledged **Kubernetes CLI**. 
+
+As of now, it can parse _Pods, Namespaces, Clusters_ (in table output), _Nodepools_ (in default output), and partially most important _metadata._ Output can be customized, default is a simple listing, otherwise it is in a form of table + prompt.
 
 Please refer to the official Google docs for more extensive metadata parsing and response properties related to clusters/nodepools.
 
