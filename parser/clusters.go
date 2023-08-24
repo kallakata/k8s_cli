@@ -5,13 +5,12 @@ import (
     "context"
     "fmt"
     "time"
-    "github.com/kallakata/k8s_cli/internal/interfaces"
     "github.com/kallakata/k8s_cli/model"
     "cloud.google.com/go/container/apiv1"
     "cloud.google.com/go/container/apiv1/containerpb"
 )
 
-func ListClusters(projectID, zone string, npf interfaces.NodePoolsFetcher) ([]model.Cluster, error) {
+func ListClusters(projectID, zone string) ([]model.Cluster, error) {
     ctx := context.Background()
 
     c, err := container.NewClusterManagerClient(ctx)
