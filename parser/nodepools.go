@@ -1,6 +1,11 @@
 package parser
 
 import (
+	"os"
+	// "log"
+	// "time"
+	"google.golang.org/grpc/status"
+	"google.golang.org/grpc/codes"
 	"github.com/fatih/color"
 	container "cloud.google.com/go/container/apiv1"
 	containerpb "cloud.google.com/go/container/apiv1/containerpb"
@@ -10,11 +15,19 @@ import (
 	"github.com/kallakata/k8s_cli/model"
 	// "github.com/kallakata/k8s_cli/pretty/pretty_nodepools"
 	"github.com/kallakata/k8s_cli/prompt/prompt_nodepools"
-	// "log"
-	// "time"
 )
 
 func ListNodepools(project, zone, cluster string) ([]model.Nodepool, error) {
+    exists, err := ClusterExists(project, zone, cluster)
+    if err != nil {
+        return nil, err
+    }
+
+    if !exists {
+        color.Red("Cluster '%s' does not exist. Please choose a different location, or cluster name", cluster)
+		os.Exit(1)
+    }
+
 	ctx := context.Background()
 
 	c, err := container.NewClusterManagerClient(ctx)
@@ -26,10 +39,10 @@ func ListNodepools(project, zone, cluster string) ([]model.Nodepool, error) {
 
 	var nodepools []model.Nodepool
 
+	parent := fmt.Sprintf("projects/%s/locations/%s/clusters/%s", project, zone, cluster)
+
 	req := &containerpb.ListNodePoolsRequest{
-		ProjectId: project,
-		Zone:      zone,
-		ClusterId: cluster,
+		Parent: parent,
 	}
 
 	resp, err := c.ListNodePools(ctx, req)
@@ -59,11 +72,7 @@ func ListNodepools(project, zone, cluster string) ([]model.Nodepool, error) {
 	// p := tea.NewProgram(pretty_nodepools.NewModel(nodepools))
 	// fmt.Printf("========== Getting nodepools ==========\n\n")
 	// time.Sleep(2 * time.Second)
-	// defer func() {
-	// 	if _, err := p.Run(); err != nil {
-	// 		log.Printf("Error running Bubble Tea program: %v", err)
-	// 	}
-	// }()
+	// p.Run()
 
 	return nodepools, nil
 }
@@ -76,11 +85,10 @@ func ListPoolsUsingPrompt(project, zone string) ([]model.Nodepool, error) {
 	resultMsg, _ := promptProgram.Run()
 
 	// Check if the result message is a model with a GetCluster method
-	if clusterModel, ok := resultMsg.(interface{ GetCluster() string }); ok {
+	if clusterModel, ok := resultMsg.(interface{ GetCluster() string }); ok && resultMsg.(interface{ GetCluster() string }) != nil {
 		cluster := clusterModel.GetCluster()
 		project := project
 		zone := zone
-		fmt.Printf(cluster, project, zone)
 		nodepools, err := ListNodepools(project, zone, cluster)
 		if err != nil {
 			return nil, err
@@ -89,5 +97,31 @@ func ListPoolsUsingPrompt(project, zone string) ([]model.Nodepool, error) {
 	}
 
 	return nil, fmt.Errorf("failed to get cluster from prompt")
+}
+
+func ClusterExists(project, location, cluster string) (bool, error) {
+    ctx := context.Background()
+
+    c, err := container.NewClusterManagerClient(ctx)
+    if err != nil {
+        return false, fmt.Errorf("Could not initialize gke client: %v", err)
+    }
+    defer c.Close()
+
+    clusterName := fmt.Sprintf("projects/%s/locations/%s/clusters/%s", project, location, cluster)
+    req := &containerpb.GetClusterRequest{
+        Name: clusterName,
+    }
+
+    _, err = c.GetCluster(ctx, req)
+    if err != nil {
+        // Handle the error, cluster doesn't exist
+        if status.Code(err) == codes.NotFound {
+            return false, nil
+        }
+        return false, fmt.Errorf("Error getting cluster: %v", err)
+    }
+
+    return true, nil
 }
 

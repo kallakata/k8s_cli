@@ -23,7 +23,7 @@ type Model struct {
 	table table.Model
 }
 
-func NewModel(items []model.Nodepool) Model {
+func NewModel(nodepools []model.Nodepool) Model {
 
 	columns := []table.Column{
 		table.NewColumn(columnKeyNodepool, "Nodepool", 35).
@@ -60,14 +60,14 @@ func NewModel(items []model.Nodepool) Model {
 
 	var rows []table.Row
 
-	for _, item := range items {
+	for _, nodepool := range nodepools {
 		rowData := table.RowData{
-			columnKeyNodepool:       item.Nodepool,
-			columnKeyNodepoolStatus: item.Status,
-			columnKeyNpVersion:      item.Version,
-			columnKeyMinNode:        item.MinNode,
-			columnKeyMaxNode:        item.MaxNode,
-			columnKeyAutoscaling:    item.Autoscaling,
+			columnKeyNodepool:       nodepool.Nodepool,
+			columnKeyNodepoolStatus: nodepool.Status,
+			columnKeyNpVersion:      nodepool.Version,
+			columnKeyMinNode:        nodepool.MinNode,
+			columnKeyMaxNode:        nodepool.MaxNode,
+			columnKeyAutoscaling:    nodepool.Autoscaling,
 		}
 		row := table.NewRow(rowData)
 		rows = append(rows, row)
