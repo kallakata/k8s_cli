@@ -25,14 +25,14 @@ var clustersCmd = &cobra.Command{
             cmd.Help()
             os.Exit(0)
         } else if len(zone) == 0 {
-            clusters, err := parser.ListClusters(project, "-", NodePoolsFetcherInstance)
+            clusters, err := parser.ListClusters(project, "-")
             if err != nil {
                 log.Printf("Error listing clusters: %v", err)
                 os.Exit(1)
             }
             runPrettyClusters(clusters, NodePoolsFetcherInstance)
         } else {
-            clusters, err := parser.ListClusters(project, zone, NodePoolsFetcherInstance)
+            clusters, err := parser.ListClusters(project, zone)
             if err != nil {
                 log.Printf("Error listing clusters: %v", err)
                 os.Exit(1)

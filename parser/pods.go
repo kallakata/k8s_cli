@@ -75,7 +75,7 @@ func ListPodsUsingPrompt(ctx string) ([]model.Pod, *kubernetes.Clientset, error)
 	resultMsg, _ := promptProgram.Run()
 
 	// Check if the result message is a model with a GetNamespace method
-	if namespaceModel, ok := resultMsg.(interface{ GetNamespace() string }); ok {
+	if namespaceModel, ok := resultMsg.(interface{ GetNamespace() string }); ok && resultMsg.(interface{ GetNamespace() string }) != nil  {
 		ns := namespaceModel.GetNamespace()
 		ctx := ctx // Replace with the appropriate context
 		pods, clientset, err := ListPods(ns, ctx)
