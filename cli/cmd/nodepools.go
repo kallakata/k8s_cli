@@ -20,8 +20,12 @@ var nodepoolsCmd = &cobra.Command{
 		project := cmd.Flags().Lookup("project").Value.String()
 		zone := cmd.Flags().Lookup("zone").Value.String()
 		cluster := cmd.Flags().Lookup("cluster").Value.String()
-
-		parser.ListNodepools(project, zone, cluster)
+		
+		if cluster != "" {
+			parser.ListNodepools(project, zone, cluster)
+		} else {
+			parser.ListPoolsUsingPrompt(project, zone)
+		}
 		// if len(project) == 0 {
 		// 	color.Red("\nNo project specified!\n\n")
 		// 	cmd.Help()
