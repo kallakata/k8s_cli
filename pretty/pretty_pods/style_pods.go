@@ -1,13 +1,11 @@
 package pretty_pods
 
 import (
-	// "log"
-	// "strings"
-
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/evertras/bubble-table/table"
 	"github.com/kallakata/k8s_cli/model"
+	"github.com/charmbracelet/bubbles/spinner"
 )
 
 var (
@@ -28,10 +26,13 @@ const (
 
 type Model struct {
 	table table.Model
+	spinner spinner.Model
 }
 
 func NewModel(items []model.Pod, ctx string, ns string) Model {
-
+	s := spinner.New()
+	s.Spinner = spinner.Dot
+	s.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
 	columns := []table.Column{
 		table.NewColumn(columnKeyPod, "Pod", 40).
 			WithFiltered(true).
@@ -75,6 +76,7 @@ func NewModel(items []model.Pod, ctx string, ns string) Model {
 			Focused(true).
 			WithPageSize(10).
 			WithRows(rows),
+		spinner: s,
 	}
 }
 
@@ -87,7 +89,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		cmd  tea.Cmd
 		cmds []tea.Cmd
 	)
-
+	m.spinner, cmd = m.spinner.Update(msg)
+	cmds = append(cmds, cmd)
 	m.table, cmd = m.table.Update(msg)
 	cmds = append(cmds, cmd)
 
@@ -96,6 +99,11 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "ctrl+c", "q":
 			cmds = append(cmds, tea.Quit)
+		case "enter":
+			m.spinner, cmd = m.spinner.Update(msg)
+			cmds = append(cmds, m.spinner.Tick)
+			m.spinner.View()
+			return m, tea.Batch(cmds...)
 		}
 
 	}
