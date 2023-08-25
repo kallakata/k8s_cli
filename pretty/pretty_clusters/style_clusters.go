@@ -6,7 +6,6 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/evertras/bubble-table/table"
 	"github.com/kallakata/k8s_cli/model"
-	"github.com/kallakata/k8s_cli/internal/interfaces"
 )
 
 const (
@@ -28,8 +27,6 @@ const (
 type Model struct {
 	table table.Model
 	selectedCluster  model.Cluster
-	showingNodePools bool
-	npf              interfaces.NodePoolsFetcher
 	clusters 		 []model.Cluster
 }
 
@@ -71,7 +68,7 @@ func (m Model) createNodePoolsRows(nodePools []model.Nodepool) []table.Row {
 
 var rows []table.Row
 
-func NewModel(items []model.Cluster, npf interfaces.NodePoolsFetcher) Model {
+func NewModel(items []model.Cluster) Model {
 
 	columns := []table.Column{
 		table.NewColumn(columnKeyCluster, "Cluster", 35).
@@ -115,7 +112,6 @@ func NewModel(items []model.Cluster, npf interfaces.NodePoolsFetcher) Model {
 			WithPageSize(10).
 			WithRows(rows),
 		selectedCluster: model.Cluster{},
-		npf: npf,
 		clusters: items,
 	}
 }
@@ -142,17 +138,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
         case "ctrl+c", "q":
             cmds = append(cmds, tea.Quit)
         case "enter":
-                m.selectedCluster = model.Cluster{}
-                m.table = m.table.WithRows(rows) // Update with clusters data
-                m.showingNodePools = true
-                // Fetch node pools using the NodePoolsFetcher instance
-                nodePools, err := m.npf.FetchNodePoolsForCluster(projectID, zone, m.selectedCluster.Cluster)
-                if err != nil {
-                    // Handle error
-                }
-                // Update node pools data in the table
-				m.selectedCluster = model.Cluster{Cluster: m.selectedCluster.Cluster}
-                m.table = m.table.WithRows(m.createNodePoolsRows(nodePools))
             }
         }
 		return m, tea.Batch(cmds...)
@@ -161,12 +146,12 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m Model) View() string {
 	body := strings.Builder{}
 
-	if m.showingNodePools {
-        body.WriteString("List of Node Pools in cluster " + m.selectedCluster.Cluster + "\n\n")
-    } else {
-        body.WriteString("List of Clusters in project and zone.\n\n" + "Status:\n 0 = Unknown\n 1 = Provisioning\n 2 = Running\n 4 = Stopping\n 5 = Error" +
-            "\n\n| Currently filter by Cluster, Status and Version, press / + letters to start filtering, and escape to clear filter. |\n| Press q or ctrl+c to quit | \n\n")
-    }
+	// if m.showingNodePools {
+    //     body.WriteString("List of Node Pools in cluster " + m.selectedCluster.Cluster + "\n\n")
+    // } else {
+	body.WriteString("List of Clusters in project and zone.\n\n" + "Status:\n 0 = Unknown\n 1 = Provisioning\n 2 = Running\n 4 = Stopping\n 5 = Error" +
+		"\n\n| Currently filter by Cluster, Status and Version, press / + letters to start filtering, and escape to clear filter. |\n| Press q or ctrl+c to quit | \n\n")
+    // }
 
 	body.WriteString(m.table.View())
 
