@@ -13,6 +13,10 @@ type Pod struct {
 
 type ClusterStatus int
 
+type NodepoolStatus struct {
+	message string
+}
+
 const (
     StatusUnspecified ClusterStatus = iota
     Provisioning
@@ -34,7 +38,5 @@ type Nodepool struct {
 	Nodepool    string
 	Status      string
 	Version     string
-	Autoscaling bool
-	MinNode     int32
-	MaxNode     int32
+	NodeCount  int
 }

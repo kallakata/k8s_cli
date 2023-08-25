@@ -2,8 +2,7 @@ package parser
 
 import (
 	"os"
-	// "log"
-	// "time"
+	"time"
 	"google.golang.org/grpc/status"
 	"google.golang.org/grpc/codes"
 	"github.com/fatih/color"
@@ -13,7 +12,7 @@ import (
 	"fmt"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/kallakata/k8s_cli/model"
-	// "github.com/kallakata/k8s_cli/pretty/pretty_nodepools"
+	"github.com/kallakata/k8s_cli/pretty/pretty_nodepools"
 	"github.com/kallakata/k8s_cli/prompt/prompt_nodepools"
 )
 
@@ -47,32 +46,20 @@ func ListNodepools(project, zone, cluster string) ([]model.Nodepool, error) {
 
 	resp, err := c.ListNodePools(ctx, req)
 
-	// for _, np := range resp.NodePools {
-	// 	nodepool := model.Nodepool{
-	// 		Nodepool:    np.Name,
-	// 		Status:      string(np.Status),
-	// 		Version:     np.Version,
-	// 		Autoscaling: np.Autoscaling.Enabled,
-	// 		MinNode:     np.Autoscaling.MinNodeCount,
-	// 		MaxNode:     np.Autoscaling.MaxNodeCount,
-	// 	}
-	// 	nodepools = append(nodepools, nodepool)
-	// }
-
 	for _, np := range resp.NodePools {
-		color.Magenta("\n-> Pool %q\n", np.Name)
-		color.Magenta("  | version: v%s\n", np.Version)
-		color.Green("  | status: %s\n", np.Status)
-		color.Yellow("  | machineType: %s\n", np.Config.MachineType)
-		color.Yellow("  | autoscaling: %v\n", np.Autoscaling != nil && np.Autoscaling.Enabled)
+		nodepool := model.Nodepool{
+			Nodepool:    np.Name,
+			Status:      string(np.StatusMessage),
+			Version:     np.Version,
+			NodeCount:   int(np.InitialNodeCount),
+		}
+		nodepools = append(nodepools, nodepool)
 	}
 
-	// fmt.Println(nodepools)
-
-	// p := tea.NewProgram(pretty_nodepools.NewModel(nodepools))
-	// fmt.Printf("========== Getting nodepools ==========\n\n")
-	// time.Sleep(2 * time.Second)
-	// p.Run()
+	p := tea.NewProgram(pretty_nodepools.NewModel(nodepools))
+	fmt.Printf("========== Getting nodepools ==========\n\n")
+	time.Sleep(2 * time.Second)
+	p.Run()
 
 	return nodepools, nil
 }
