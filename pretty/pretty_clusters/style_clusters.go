@@ -6,7 +6,6 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/evertras/bubble-table/table"
 	"github.com/kallakata/k8s_cli/model"
-	"github.com/kallakata/k8s_cli/internal/interfaces"
 )
 
 const (
@@ -28,8 +27,6 @@ const (
 type Model struct {
 	table table.Model
 	selectedCluster  model.Cluster
-	showingNodePools bool
-	npf              interfaces.NodePoolsFetcher
 	clusters 		 []model.Cluster
 	selectedIndex    int
 }
@@ -65,7 +62,7 @@ func (m Model) createNodePoolsRows(nodePools []model.Nodepool) []table.Row {
 
 var rows []table.Row
 
-func NewModel(items []model.Cluster, npf interfaces.NodePoolsFetcher) Model {
+func NewModel(items []model.Cluster) Model {
 
 	columns := []table.Column{
 		table.NewColumn(columnKeyCluster, "Cluster", 35).
@@ -109,7 +106,6 @@ func NewModel(items []model.Cluster, npf interfaces.NodePoolsFetcher) Model {
 			WithPageSize(10).
 			WithRows(rows),
 		selectedCluster: model.Cluster{},
-		npf: npf,
 		clusters: items,
 		selectedIndex: -1,
 	}

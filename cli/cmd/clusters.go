@@ -30,14 +30,14 @@ var clustersCmd = &cobra.Command{
                 log.Printf("Error listing clusters: %v", err)
                 os.Exit(1)
             }
-            runPrettyClusters(clusters, NodePoolsFetcherInstance)
+            runPrettyClusters(clusters)
         } else {
             clusters, err := parser.ListClusters(project, zone)
             if err != nil {
                 log.Printf("Error listing clusters: %v", err)
                 os.Exit(1)
             }
-            runPrettyClusters(clusters, NodePoolsFetcherInstance)
+            runPrettyClusters(clusters)
         }
     },
 }
@@ -59,8 +59,8 @@ func init() {
 	// clustersCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
-func runPrettyClusters(clusters []model.Cluster, npf interfaces.NodePoolsFetcher) {
-    model := pretty_clusters.NewModel(clusters, npf)
+func runPrettyClusters(clusters []model.Cluster) {
+    model := pretty_clusters.NewModel(clusters)
     p := tea.NewProgram(model)
     if err, _ := p.Run(); err != nil {
         log.Printf("Error starting Bubbletea program: %v", err)
