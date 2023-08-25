@@ -17,6 +17,7 @@ const (
 	columnKeyMinNode        = "min_node"
 	columnKeyMaxNode        = "max_node"
 	columnKeyAutoscaling    = "autoscaling"
+	columnKeyNodeCount = "node_count"
 )
 
 type Model struct {
@@ -39,23 +40,28 @@ func NewModel(nodepools []model.Nodepool) Model {
 		table.NewColumn(columnKeyNpVersion, "Version", 25).
 			WithFiltered(true).
 			WithStyle(lipgloss.NewStyle().
-				Foreground(lipgloss.Color("#ff0")).
+				Foreground(lipgloss.Color("#cd03d3")).
 				Align(lipgloss.Center)),
-		table.NewColumn(columnKeyAutoscaling, "Autoscaling", 10).
+		table.NewColumn(columnKeyNodeCount, "NodeCount", 25).
 			WithFiltered(true).
 			WithStyle(lipgloss.NewStyle().
-				Foreground(lipgloss.Color("#ff0")).
+				Foreground(lipgloss.Color("#00FFFF")).
 				Align(lipgloss.Center)),
-		table.NewColumn(columnKeyMinNode, "MinNode", 15).
-			WithFiltered(false).
-			WithStyle(lipgloss.NewStyle().
-				Foreground(lipgloss.Color("#ff0")).
-				Align(lipgloss.Center)),
-		table.NewColumn(columnKeyMaxNode, "MaxNode", 15).
-			WithFiltered(false).
-			WithStyle(lipgloss.NewStyle().
-				Foreground(lipgloss.Color("#ff0")).
-				Align(lipgloss.Center)),
+		// table.NewColumn(columnKeyAutoscaling, "Autoscaling", 10).
+		// 	WithFiltered(true).
+		// 	WithStyle(lipgloss.NewStyle().
+		// 		Foreground(lipgloss.Color("#ff0")).
+		// 		Align(lipgloss.Center)),
+		// table.NewColumn(columnKeyMinNode, "MinNode", 15).
+		// 	WithFiltered(false).
+		// 	WithStyle(lipgloss.NewStyle().
+		// 		Foreground(lipgloss.Color("#ff0")).
+		// 		Align(lipgloss.Center)),
+		// table.NewColumn(columnKeyMaxNode, "MaxNode", 15).
+		// 	WithFiltered(false).
+		// 	WithStyle(lipgloss.NewStyle().
+		// 		Foreground(lipgloss.Color("#ff0")).
+		// 		Align(lipgloss.Center)),
 	}
 
 	var rows []table.Row
@@ -65,9 +71,7 @@ func NewModel(nodepools []model.Nodepool) Model {
 			columnKeyNodepool:       nodepool.Nodepool,
 			columnKeyNodepoolStatus: nodepool.Status,
 			columnKeyNpVersion:      nodepool.Version,
-			columnKeyMinNode:        nodepool.MinNode,
-			columnKeyMaxNode:        nodepool.MaxNode,
-			columnKeyAutoscaling:    nodepool.Autoscaling,
+			columnKeyNodeCount: nodepool.NodeCount,
 		}
 		row := table.NewRow(rowData)
 		rows = append(rows, row)

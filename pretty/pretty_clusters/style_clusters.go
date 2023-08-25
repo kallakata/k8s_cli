@@ -31,10 +31,7 @@ type Model struct {
 	showingNodePools bool
 	npf              interfaces.NodePoolsFetcher
 	clusters 		 []model.Cluster
-}
-
-type NodePoolsFetcher interface {
-    FetchNodePoolsForCluster(project, zone, clusterName string) ([]model.Nodepool, error)
+	selectedIndex    int
 }
 
 func (m Model) CreateClusterRows(items []model.Cluster) []table.Row {
@@ -59,9 +56,6 @@ func (m Model) createNodePoolsRows(nodePools []model.Nodepool) []table.Row {
             columnKeyNodepool:       np.Nodepool,
             columnKeyClusterStatus: np.Status,
             columnKeyVersion:       np.Version,
-            columnKeyMinNode:      np.MinNode,
-			columnKeyMaxNode:      np.MaxNode,
-			columnKeyAutoscaling: np.Autoscaling,
         }
         row := table.NewRow(rowData)
         rows = append(rows, row)
@@ -117,6 +111,7 @@ func NewModel(items []model.Cluster, npf interfaces.NodePoolsFetcher) Model {
 		selectedCluster: model.Cluster{},
 		npf: npf,
 		clusters: items,
+		selectedIndex: -1,
 	}
 }
 
@@ -141,34 +136,69 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
         switch msg.String() {
         case "ctrl+c", "q":
             cmds = append(cmds, tea.Quit)
-        case "enter":
-                m.selectedCluster = model.Cluster{}
-                m.table = m.table.WithRows(rows) // Update with clusters data
-                m.showingNodePools = true
-                // Fetch node pools using the NodePoolsFetcher instance
-                nodePools, err := m.npf.FetchNodePoolsForCluster(projectID, zone, m.selectedCluster.Cluster)
-                if err != nil {
-                    // Handle error
-                }
-                // Update node pools data in the table
-				m.selectedCluster = model.Cluster{Cluster: m.selectedCluster.Cluster}
-                m.table = m.table.WithRows(m.createNodePoolsRows(nodePools))
-            }
+        case "b":
+            // selectedIdx := m.selectedIndex
+            // if selectedIdx >= 0 && selectedIdx < len(m.clusters) {
+			// 	fmt.Println("Key pressed")
+            //     selectedCluster := m.clusters[selectedIdx]
+			// 	fmt.Println(selectedCluster)
+            //     Fetch node pools for the selected cluster
+            //     nodePools, err := fetcher.ListNodepools("devops-internal-t", "europe-west1-b", selectedCluster.Cluster)
+            //     if err != nil {
+            //         Handle the error
+            //         fmt.Println("Error fetching node pools:", err)
+            //     } else {
+            //         Create node pools rows and update the model
+            //         nodePoolsRows := m.createNodePoolsRows(nodePools)
+            //         m.table = m.table.WithRows(nodePoolsRows)
+            //     }
+            // }
         }
-		return m, tea.Batch(cmds...)
     }
+
+    return m, tea.Batch(cmds...)
+}
 
 func (m Model) View() string {
-	body := strings.Builder{}
+    body := strings.Builder{}
 
-	if m.showingNodePools {
-        body.WriteString("List of Node Pools in cluster " + m.selectedCluster.Cluster + "\n\n")
-    } else {
-        body.WriteString("List of Clusters in project and zone.\n\n" + "Status:\n 0 = Unknown\n 1 = Provisioning\n 2 = Running\n 4 = Stopping\n 5 = Error" +
+    if m.selectedCluster.Cluster != "" {
+        // body.WriteString("List of Node Pools in cluster " + m.selectedCluster.Cluster + "\n\n")
+
+        // Create a table for node pools similar to the cluster table
+        // nodePoolsColumns := []table.Column{
+        //     // Define your node pools table columns here
+        //     // e.g., table.NewColumn("columnKeyNodepool", "Node Pool", 20),
+        //     //       table.NewColumn("columnKeyStatus", "Status", 15),
+        //     //       ...
+        // }
+
+        // Fetch node pools for the selected cluster
+        // nodePools, err := fetcher.ListNodepools("devops-internal-t", "europe-west1-b", m.selectedCluster.Cluster)
+    //     if err != nil {
+    //         // Handle the error
+    //         body.WriteString("Error fetching node pools: " + err.Error())
+    //     } else {
+    //         // Create rows for node pools
+    //         nodePoolsRows := m.createNodePoolsRows(nodePools)
+
+    //         // Create the node pools table
+    //         nodePoolsTable := table.New(nodePoolsColumns).
+    //             Filtered(true).
+    //             Focused(true).
+    //             WithPageSize(10).
+    //             WithRows(nodePoolsRows)
+
+    //         // Render the node pools table view
+    //         body.WriteString(nodePoolsTable.View())
+    //     }
+    // } else {
+        // Render the clusters table view
+        body.WriteString("List of Clusters in project and zone.\n\n" +
+            "Status:\n 0 = Unknown\n 1 = Provisioning\n 2 = Running\n 4 = Stopping\n 5 = Error" +
             "\n\n| Currently filter by Cluster, Status and Version, press / + letters to start filtering, and escape to clear filter. |\n| Press q or ctrl+c to quit | \n\n")
+        body.WriteString(m.table.View())
     }
 
-	body.WriteString(m.table.View())
-
-	return body.String()
+    return body.String()
 }

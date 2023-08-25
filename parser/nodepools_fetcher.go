@@ -32,11 +32,8 @@ func (npf nodePoolsFetcher) FetchNodePoolsForCluster(projectID, zone, clusterNam
     for _, np := range resp.NodePools {
         nodePool := model.Nodepool{
             Nodepool:   np.Name,
-            Status: string(np.Status),
+            // Status: np.Conditions{Message: message},
 			Version: np.Version,
-			Autoscaling: np.Autoscaling.Enabled,
-			MinNode:     np.Autoscaling.MinNodeCount,
-			MaxNode:     np.Autoscaling.MaxNodeCount,
         }
         nodePools = append(nodePools, nodePool)
     }
