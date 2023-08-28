@@ -2,7 +2,7 @@
 
 :wave: A full fledged **Kubernetes CLI**.
 
-As of now, it can parse _Pods, Namespaces, Clusters_ (in table output), _Nodepools_ (in default list output), and partially most important _metadata._ Output can be customized, default is a simple listing, otherwise it is in a form of table + interactive prompt..
+As of now, it can parse _Pods, Namespaces, Clusters_ (in table output), _Nodepools_ (in default list output), and partially most important _metadata._ Output can be customized, default is a simple listing, otherwise it is in a form of table + interactive prompt.
 
 Please refer to the official Google docs for more extensive metadata parsing and response properties related to clusters/nodepools. Authentication is handled locally via _kubeconfig_ and _gcloud_.
 
