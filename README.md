@@ -1,6 +1,6 @@
 # A Kubernetes CLI parser with pretty output 
 
-:wave: A full fledged **Kubernetes CLI**. 
+:wave: A full fledged **Kubernetes CLI**. .
 
 As of now, it can parse _Pods, Namespaces, Clusters_ (in table output), _Nodepools_ (in default list output), and partially most important _metadata._ Output can be customized, default is a simple listing, otherwise it is in a form of table + prompt.
 
