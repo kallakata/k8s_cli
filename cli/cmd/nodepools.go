@@ -15,7 +15,7 @@ import (
 var nodepoolsCmd = &cobra.Command{
 	Use:   "list-nodepools",
 	Aliases: []string{"pools"},
-	Short: "Lists nodepools in a cluster.",
+	Short: "Lists nodepools in a cluster",
 	Run: func(cmd *cobra.Command, args []string) {
 		project := cmd.Flags().Lookup("project").Value.String()
 		zone := cmd.Flags().Lookup("zone").Value.String()
