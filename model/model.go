@@ -8,6 +8,8 @@ type Pod struct {
 	Pod       string
 	Status    string
 	Namespace string
+	Requests string
+	Limits  string
 	Context   string
 }
 

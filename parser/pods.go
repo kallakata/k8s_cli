@@ -54,6 +54,8 @@ func ListPods(ns string, ctx string) ([]model.Pod, *kubernetes.Clientset, error)
 			Pod:       pod.Name,
 			Status:    string(pod.Status.Phase),
 			Namespace: ns,
+			Requests: pod.Spec.Containers[0].Resources.Requests.Cpu().String(),
+			Limits: pod.Spec.Containers[0].Resources.Limits.Cpu().String(),
 			Context:   ctx,
 		}
 		items = append(items, item)
