@@ -55,3 +55,42 @@ func ListNamespaces(ctx string) ([]model.Ns, *kubernetes.Clientset, error) {
 
 	return items, clientset, nil
 }
+
+func ListNamespacesShort(ctx, ns string) bool {
+    userHomeDir, err := os.UserHomeDir()
+    if err != nil {
+        fmt.Printf("Getting user home dir failed: %v\n", err)
+        os.Exit(1)
+    }
+    kubeConfigPath := filepath.Join(userHomeDir, ".kube", "config")
+
+    configLoadingRules := &clientcmd.ClientConfigLoadingRules{ExplicitPath: kubeConfigPath}
+    configOverrides := &clientcmd.ConfigOverrides{CurrentContext: ctx}
+
+    kubeConfig, err := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(configLoadingRules, configOverrides).ClientConfig()
+    if err != nil {
+        fmt.Printf("Error getting Kubernetes config: %v\n", err)
+        os.Exit(1)
+    }
+
+    clientset, err := kubernetes.NewForConfig(kubeConfig)
+    if err != nil {
+        fmt.Printf("Error creating Kubernetes client: %v\n", err)
+        os.Exit(1)
+    }
+
+    namespaces, err := clientset.CoreV1().Namespaces().List(context.Background(), metav1.ListOptions{})
+    if err != nil {
+        fmt.Printf("Error getting namespaces: %v\n", err)
+        os.Exit(1)
+    }
+
+    for _, namespace := range namespaces.Items {
+        if namespace.Name == ns {
+            return true
+        }
+    }
+
+    fmt.Printf("Namespace %s doesn't exist in the cluster.\n", ns)
+    return false
+}
