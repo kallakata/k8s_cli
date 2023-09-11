@@ -22,8 +22,10 @@ const (
 	columnKeyStatus = "status"
 	columnKeyNs     = "namespace"
 	columnKeyCtx    = "context"
-	columnKeyRq = "request"
-	columnKeyLm = "limits"
+	columnKeyCPUreq = "CPU requests"
+	columnKeyCPUlim = "CPU limits"
+	columnKeyMemReq = "Mem requests"
+	columnKeyMemLim = "Mem limits"
 )
 
 type Model struct {
@@ -65,8 +67,10 @@ func NewModel(items []model.Pod, ctx string, ns string) Model {
 			columnKeyPod:    item.Pod,
 			columnKeyStatus: item.Status,
 			columnKeyNs:     ns,
-			columnKeyRq: 	item.Requests,
-			columnKeyLm: item.Limits,
+			columnKeyCPUreq: 	item.CPUReq,
+			columnKeyCPUlim: item.CPULim,
+			columnKeyMemReq: item.MemReq,
+			columnKeyMemLim: item.MemLim,
 			columnKeyCtx:    ctx,
 		}
 		row := table.NewRow(rowData)
@@ -126,13 +130,16 @@ func (m Model) View() string {
 	// return body.String()
 
 	selected := m.table.HighlightedRow().Data[columnKeyPod].(string)
-	rq := m.table.HighlightedRow().Data[columnKeyRq].(string)
-	lm := m.table.HighlightedRow().Data[columnKeyLm].(string)
+	rq_cpu := m.table.HighlightedRow().Data[columnKeyCPUreq].(string)
+	rq_mem := m.table.HighlightedRow().Data[columnKeyMemReq].(string)
+	lim_cpu := m.table.HighlightedRow().Data[columnKeyCPUlim].(string)
+	lim_mem := m.table.HighlightedRow().Data[columnKeyMemLim].(string)
 	view := lipgloss.JoinVertical(
 		lipgloss.Left,
 		lipgloss.NewStyle().Foreground(lipgloss.Color("#42d303")).Render("Press q or ctrl+c to quit"),
 		lipgloss.NewStyle().Foreground(lipgloss.Color("#ff5733")).Render("Pod: "+selected),
-		lipgloss.NewStyle().Foreground(lipgloss.Color("#ff5733")).Render("Requests CPU: "+rq, "/", "Limits CPU: "+lm),
+		lipgloss.NewStyle().Foreground(lipgloss.Color("#ff5733")).Render("Requests CPU: "+rq_cpu, "/", "Limits CPU: "+lim_cpu),
+		lipgloss.NewStyle().Foreground(lipgloss.Color("#ff5733")).Render("Requests Mem: "+rq_mem, "/", "Limits Mem: "+lim_mem),
 		lipgloss.NewStyle().Foreground(lipgloss.Color("#03a1d3")).Render("| Currently filter by Pod, Status and Namespace, press / + letters to start filtering, and escape to clear filter. | \n"),
 		m.table.View(),
 	) + "\n"
