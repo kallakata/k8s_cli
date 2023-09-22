@@ -23,6 +23,18 @@ func ListPods(ns string, ctx string) ([]model.Pod, *kubernetes.Clientset, error)
 	}
 	kubeConfigPath := filepath.Join(userHomeDir, ".kube", "config")
 
+	var clientset *kubernetes.Clientset
+    if ctx == "" {
+        // If ctx is not provided as an argument, get the current Kubernetes context
+        kubeConfig, err := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
+            &clientcmd.ClientConfigLoadingRules{ExplicitPath: kubeConfigPath},
+            &clientcmd.ConfigOverrides{}).RawConfig()
+        if err != nil {
+            fmt.Printf("Error getting kubernetes config: %v\n", err)
+            os.Exit(1)
+        }
+        ctx = kubeConfig.CurrentContext
+    }
 	configLoadingRules := &clientcmd.ClientConfigLoadingRules{ExplicitPath: kubeConfigPath}
 	configOverrides := &clientcmd.ConfigOverrides{CurrentContext: ctx}
 
@@ -32,7 +44,7 @@ func ListPods(ns string, ctx string) ([]model.Pod, *kubernetes.Clientset, error)
 		os.Exit(1)
 	}
 
-	clientset, err := kubernetes.NewForConfig(kubeConfig)
+	clientset, err = kubernetes.NewForConfig(kubeConfig)
 
 	if err != nil {
 		fmt.Printf("Error getting kubernetes config: %v\n", err)

@@ -6,6 +6,8 @@ import (
 	"github.com/evertras/bubble-table/table"
 	"github.com/kallakata/k8s_cli/model"
 	"github.com/charmbracelet/bubbles/spinner"
+	"fmt"
+	"time"
 )
 
 var (
@@ -67,7 +69,7 @@ func NewModel(items []model.Pod, ctx string, ns string) Model {
 			columnKeyPod:    item.Pod,
 			columnKeyStatus: item.Status,
 			columnKeyNs:     ns,
-			columnKeyCPUreq: 	item.CPUReq,
+			columnKeyCPUreq: item.CPUReq,
 			columnKeyCPUlim: item.CPULim,
 			columnKeyMemReq: item.MemReq,
 			columnKeyMemLim: item.MemLim,
@@ -106,6 +108,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c", "q":
+			fmt.Printf("\nExiting...\n\n")
+			time.Sleep(1 * time.Second)
 			cmds = append(cmds, tea.Quit)
 		case "enter":
 			m.spinner, cmd = m.spinner.Update(msg)

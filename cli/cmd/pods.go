@@ -4,7 +4,6 @@ import (
 	"github.com/fatih/color"
 	"github.com/kallakata/k8s_cli/parser"
 	"github.com/spf13/cobra"
-	"os"
 )
 
 // podsCmd represents the pods command
@@ -16,14 +15,16 @@ var podsCmd = &cobra.Command{
 		ctx := cmd.Flags().Lookup("context").Value.String()
 		ns := cmd.Flags().Lookup("namespace").Value.String()
 
-		if len(ctx) == 0 {
-			color.Red("\nNo context specified!\n\n")
-			cmd.Help()
-			os.Exit(0)
-		} else if len(ns) != 0 {
-			parser.ListPods(ns, ctx)
-		} else {
-			parser.ListPodsUsingPrompt(ctx)
+		switch {
+			case len(ctx) == 0 && len(ns) == 0:
+				color.Red("\nNo context specified!\nUsing current context.\n\n")
+				parser.ListPodsUsingPrompt("")
+			case len(ns) != 0 && len(ctx) != 0:
+				parser.ListPods(ns, ctx)
+			case len(ns) != 0 && len(ctx) == 0:
+				parser.ListPods(ns, "")
+			case len(ns) == 0 && len(ctx) != 0:
+				parser.ListPodsUsingPrompt(ctx)
 		}
 	},
 }
