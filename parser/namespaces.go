@@ -22,6 +22,19 @@ func ListNamespaces(ctx string) ([]model.Ns, *kubernetes.Clientset, error) {
 	}
 	kubeConfigPath := filepath.Join(userHomeDir, ".kube", "config")
 
+	var clientset *kubernetes.Clientset
+    if ctx == "" {
+        // If ctx is not provided as an argument, get the current Kubernetes context
+        kubeConfig, err := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
+            &clientcmd.ClientConfigLoadingRules{ExplicitPath: kubeConfigPath},
+            &clientcmd.ConfigOverrides{}).RawConfig()
+        if err != nil {
+            fmt.Printf("Error getting kubernetes config: %v\n", err)
+            os.Exit(1)
+        }
+        ctx = kubeConfig.CurrentContext
+    }
+
 	configLoadingRules := &clientcmd.ClientConfigLoadingRules{ExplicitPath: kubeConfigPath}
 	configOverrides := &clientcmd.ConfigOverrides{CurrentContext: ctx}
 
@@ -31,7 +44,10 @@ func ListNamespaces(ctx string) ([]model.Ns, *kubernetes.Clientset, error) {
 		os.Exit(1)
 	}
 
-	clientset, err := kubernetes.NewForConfig(kubeConfig)
+	clientset, err = kubernetes.NewForConfig(kubeConfig)
+	if err != nil {
+		fmt.Printf("Error preparing new clientset: %v\n", err)
+	}
 	namespaces, err := clientset.CoreV1().Namespaces().List(context.Background(), metav1.ListOptions{})
 	if err != nil {
 		err = fmt.Errorf("error getting namespaces: %v\n", err)
@@ -64,6 +80,19 @@ func ListNamespacesShort(ctx, ns string) bool {
     }
     kubeConfigPath := filepath.Join(userHomeDir, ".kube", "config")
 
+	var clientset *kubernetes.Clientset
+    if ctx == "" {
+        // If ctx is not provided as an argument, get the current Kubernetes context
+        kubeConfig, err := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
+            &clientcmd.ClientConfigLoadingRules{ExplicitPath: kubeConfigPath},
+            &clientcmd.ConfigOverrides{}).RawConfig()
+        if err != nil {
+            fmt.Printf("Error getting kubernetes config: %v\n", err)
+            os.Exit(1)
+        }
+        ctx = kubeConfig.CurrentContext
+    }
+
     configLoadingRules := &clientcmd.ClientConfigLoadingRules{ExplicitPath: kubeConfigPath}
     configOverrides := &clientcmd.ConfigOverrides{CurrentContext: ctx}
 
@@ -73,7 +102,7 @@ func ListNamespacesShort(ctx, ns string) bool {
         os.Exit(1)
     }
 
-    clientset, err := kubernetes.NewForConfig(kubeConfig)
+    clientset, err = kubernetes.NewForConfig(kubeConfig)
     if err != nil {
         fmt.Printf("Error creating Kubernetes client: %v\n", err)
         os.Exit(1)
