@@ -101,7 +101,7 @@ func ListNamespacesShort(ctx, ns string) bool {
         fmt.Printf("Error getting Kubernetes config: %v\n", err)
         os.Exit(1)
     }
-
+    // Get clientset
     clientset, err = kubernetes.NewForConfig(kubeConfig)
     if err != nil {
         fmt.Printf("Error creating Kubernetes client: %v\n", err)
