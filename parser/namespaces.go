@@ -115,7 +115,7 @@ func ListNamespacesShort(ctx, ns string) bool {
     }
 
     for _, namespace := range namespaces.Items {
-        if namespace.Name == ns {
+        if namespace.Name == ns || ns == "" {
             return true
         }
     }

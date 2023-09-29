@@ -70,13 +70,14 @@ func ListPods(ns string, ctx string) ([]model.Pod, *kubernetes.Clientset, error)
 			CPULim: pod.Spec.Containers[0].Resources.Limits.Cpu().String(),
 			MemReq: pod.Spec.Containers[0].Resources.Requests.Memory().String(),
 			MemLim: pod.Spec.Containers[0].Resources.Limits.Memory().String(),
+			Image: pod.Spec.Containers[0].Image,
 			Context:   ctx,
 		}
 		items = append(items, item)
 	}
 
 	p := tea.NewProgram(pretty_pods.NewModel(items, ctx, ns))
-	fmt.Printf("\n\n========== Getting pods ==========\n\n")
+	fmt.Printf("\n\n========== | Getting pods | ==========\n\n")
 	time.Sleep(2 * time.Second)
 	p.Run()
 
