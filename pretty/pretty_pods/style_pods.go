@@ -28,6 +28,7 @@ const (
 	columnKeyCPUlim = "CPU limits"
 	columnKeyMemReq = "Mem requests"
 	columnKeyMemLim = "Mem limits"
+	columnKeyImage 	= "Image"
 )
 
 type Model struct {
@@ -40,10 +41,10 @@ func NewModel(items []model.Pod, ctx string, ns string) Model {
 	s.Spinner = spinner.Dot
 	s.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
 	columns := []table.Column{
-		table.NewColumn(columnKeyPod, "Pod", 40).
+		table.NewColumn(columnKeyPod, "Pod", 55).
 			WithFiltered(true).
 			WithStyle(lipgloss.NewStyle().
-				Foreground(lipgloss.Color("#ff0")).
+				Foreground(lipgloss.Color("#dd77d5")).
 				Align(lipgloss.Center)),
 		table.NewColumn(columnKeyStatus, "Status", 15).
 			WithFiltered(true).
@@ -54,11 +55,6 @@ func NewModel(items []model.Pod, ctx string, ns string) Model {
 			WithFiltered(true).
 			WithStyle(lipgloss.NewStyle().
 				Foreground(lipgloss.Color("#ff0")).
-				Align(lipgloss.Center)),
-		table.NewColumn(columnKeyCtx, "Context", 30).
-			WithFiltered(false).
-			WithStyle(lipgloss.NewStyle().
-				Faint(true).
 				Align(lipgloss.Center)),
 	}
 
@@ -73,6 +69,7 @@ func NewModel(items []model.Pod, ctx string, ns string) Model {
 			columnKeyCPUlim: item.CPULim,
 			columnKeyMemReq: item.MemReq,
 			columnKeyMemLim: item.MemLim,
+			columnKeyImage: item.Image,
 			columnKeyCtx:    ctx,
 		}
 		row := table.NewRow(rowData)
@@ -132,19 +129,29 @@ func (m Model) View() string {
 	// body.WriteString(m.table.View())
 
 	// return body.String()
+	highlightedRow := m.table.HighlightedRow()
 
+	footerText := fmt.Sprintf(
+		"Pg. %d/%d \n Currently looking at context: %s",
+		m.table.CurrentPage(),
+		m.table.MaxPages(),
+		highlightedRow.Data[columnKeyCtx],
+	)
+	m.table = m.table.WithStaticFooter(footerText)
 	selected := m.table.HighlightedRow().Data[columnKeyPod].(string)
 	rq_cpu := m.table.HighlightedRow().Data[columnKeyCPUreq].(string)
 	rq_mem := m.table.HighlightedRow().Data[columnKeyMemReq].(string)
 	lim_cpu := m.table.HighlightedRow().Data[columnKeyCPUlim].(string)
 	lim_mem := m.table.HighlightedRow().Data[columnKeyMemLim].(string)
+	image := m.table.HighlightedRow().Data[columnKeyImage].(string)
 	view := lipgloss.JoinVertical(
 		lipgloss.Left,
-		lipgloss.NewStyle().Foreground(lipgloss.Color("#42d303")).Render("Press q or ctrl+c to quit"),
-		lipgloss.NewStyle().Foreground(lipgloss.Color("#ff5733")).Render("Pod: "+selected),
+		lipgloss.NewStyle().Foreground(lipgloss.Color("#03a1d3")).Render("| Currently filter by Pod, Status and Namespace, press / + letters to start filtering, and escape to clear filter. | \n"),
+		lipgloss.NewStyle().Foreground(lipgloss.Color("#42d303")).Render("Press q or ctrl+c to quit\n\n"),
+		lipgloss.NewStyle().Foreground(lipgloss.Color("#77d5dd")).Render("Pod: "+selected),
+		lipgloss.NewStyle().Foreground(lipgloss.Color("#77d5dd")).Render("Image: "+image),
 		lipgloss.NewStyle().Foreground(lipgloss.Color("#ff5733")).Render("Requests CPU: "+rq_cpu, "/", "Limits CPU: "+lim_cpu),
 		lipgloss.NewStyle().Foreground(lipgloss.Color("#ff5733")).Render("Requests Mem: "+rq_mem, "/", "Limits Mem: "+lim_mem),
-		lipgloss.NewStyle().Foreground(lipgloss.Color("#03a1d3")).Render("| Currently filter by Pod, Status and Namespace, press / + letters to start filtering, and escape to clear filter. | \n"),
 		m.table.View(),
 	) + "\n"
 
