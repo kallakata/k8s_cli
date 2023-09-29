@@ -12,6 +12,7 @@ type Pod struct {
 	MemReq  string
 	CPULim string
 	MemLim string
+	Image string
 	Context   string
 }
 
