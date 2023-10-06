@@ -64,7 +64,7 @@ func NewModel(items []model.Pod, ctx string, ns string) Model {
 		rowData := table.RowData{
 			columnKeyPod:    item.Pod,
 			columnKeyStatus: item.Status,
-			columnKeyNs:     ns,
+			columnKeyNs:     item.Namespace,
 			columnKeyCPUreq: item.CPUReq,
 			columnKeyCPUlim: item.CPULim,
 			columnKeyMemReq: item.MemReq,
