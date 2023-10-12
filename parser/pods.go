@@ -61,19 +61,37 @@ func ListPods(ns string, ctx string) ([]model.Pod, *kubernetes.Clientset, error)
 	}
 	
 	var items []model.Pod
-	for _, pod := range pods.Items {
-		item := model.Pod{
-			Pod:       pod.Name,
-			Status:    string(pod.Status.Phase),
-			Namespace: ns,
-			CPUReq: pod.Spec.Containers[0].Resources.Requests.Cpu().String(),
-			CPULim: pod.Spec.Containers[0].Resources.Limits.Cpu().String(),
-			MemReq: pod.Spec.Containers[0].Resources.Requests.Memory().String(),
-			MemLim: pod.Spec.Containers[0].Resources.Limits.Memory().String(),
-			Image: pod.Spec.Containers[0].Image,
-			Context:   ctx,
+
+	if ns == "" {
+		for _, pod := range pods.Items {
+			item := model.Pod{
+				Pod:       pod.Name,
+				Status:    string(pod.Status.Phase),
+				Namespace: pod.Namespace,
+				CPUReq: pod.Spec.Containers[0].Resources.Requests.Cpu().String(),
+				CPULim: pod.Spec.Containers[0].Resources.Limits.Cpu().String(),
+				MemReq: pod.Spec.Containers[0].Resources.Requests.Memory().String(),
+				MemLim: pod.Spec.Containers[0].Resources.Limits.Memory().String(),
+				Image: pod.Spec.Containers[0].Image,
+				Context:   ctx,
+			}
+			items = append(items, item)
 		}
-		items = append(items, item)
+	} else {
+		for _, pod := range pods.Items {
+			item := model.Pod{
+				Pod:       pod.Name,
+				Status:    string(pod.Status.Phase),
+				Namespace: ns,
+				CPUReq: pod.Spec.Containers[0].Resources.Requests.Cpu().String(),
+				CPULim: pod.Spec.Containers[0].Resources.Limits.Cpu().String(),
+				MemReq: pod.Spec.Containers[0].Resources.Requests.Memory().String(),
+				MemLim: pod.Spec.Containers[0].Resources.Limits.Memory().String(),
+				Image: pod.Spec.Containers[0].Image,
+				Context:   ctx,
+			}
+			items = append(items, item)
+		}
 	}
 
 	p := tea.NewProgram(pretty_pods.NewModel(items, ctx, ns))
@@ -94,8 +112,9 @@ func ListPodsUsingPrompt(ctx string) (error) {
 	// Check if the result message is a model with a GetNamespace method
 	if resultMsg != nil {
 		if namespaceModel, ok := resultMsg.(interface{ GetNamespace() string }); ok {
+
 			ns := namespaceModel.GetNamespace()
-			ctx := ctx // Replace with the appropriate context
+			ctx := ctx
 			checkNs := ListNamespacesShort(ctx, ns)
 			if checkNs {
 				ListPods(ns, ctx)
