@@ -19,7 +19,7 @@ func ListClusters(projectID, zone string) ([]model.Cluster, error) {
     c, err := container.NewClusterManagerClient(ctx)
     if err != nil {
         cancel()
-        return nil, fmt.Errorf("Could not initialize gke client: %v", err)
+        return nil, fmt.Errorf("could not initialize gke client: %v", err)
     }
     defer c.Close()
     var parent string
@@ -35,7 +35,7 @@ func ListClusters(projectID, zone string) ([]model.Cluster, error) {
     resp, err := c.ListClusters(ctx, req)
     if err != nil {
         cancel()
-        return nil, fmt.Errorf("Error listing clusters: %v", err)
+        return nil, fmt.Errorf("error listing clusters: %v", err)
     }
 
     var clusters []model.Cluster

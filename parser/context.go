@@ -19,6 +19,10 @@ func getContext() {
         &clientcmd.ConfigOverrides{
             CurrentContext: "",
         }).RawConfig()
+	if err != nil {
+		fmt.Printf("Getting default config failed: %v\n", err)
+		os.Exit(1)
+	}
     currentContext := config.CurrentContext
 	fmt.Println(currentContext)
 }

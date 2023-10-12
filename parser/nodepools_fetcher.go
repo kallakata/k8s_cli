@@ -16,7 +16,7 @@ func (npf nodePoolsFetcher) FetchNodePoolsForCluster(projectID, zone, clusterNam
 
     c, err := container.NewClusterManagerClient(ctx)
     if err != nil {
-        return nil, fmt.Errorf("Could not initialize gke client: %v", err)
+        return nil, fmt.Errorf("could not initialize gke client: %v", err)
     }
     defer c.Close()
 
@@ -25,7 +25,7 @@ func (npf nodePoolsFetcher) FetchNodePoolsForCluster(projectID, zone, clusterNam
     }
     resp, err := c.ListNodePools(ctx, req)
     if err != nil {
-        return nil, fmt.Errorf("Error listing node pools: %v", err)
+        return nil, fmt.Errorf("error listing node pools: %v", err)
     }
 
     var nodePools []model.Nodepool
