@@ -31,7 +31,7 @@ func ListNodepools(project, zone, cluster string) ([]model.Nodepool, error) {
 
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("Could not initialize gke client: %v", err)
+		return nil, fmt.Errorf("could not initialize gke client: %v", err)
 	}
 
 	defer c.Close()
@@ -45,6 +45,9 @@ func ListNodepools(project, zone, cluster string) ([]model.Nodepool, error) {
 	}
 
 	resp, err := c.ListNodePools(ctx, req)
+	if err != nil {
+		return nil, fmt.Errorf("could not list nodepools: %v", err)
+	}
 
 	for _, np := range resp.NodePools {
 		nodepool := model.Nodepool{
@@ -91,7 +94,7 @@ func ClusterExists(project, location, cluster string) (bool, error) {
 
     c, err := container.NewClusterManagerClient(ctx)
     if err != nil {
-        return false, fmt.Errorf("Could not initialize gke client: %v", err)
+        return false, fmt.Errorf("could not initialize gke client: %v", err)
     }
     defer c.Close()
 
@@ -106,7 +109,7 @@ func ClusterExists(project, location, cluster string) (bool, error) {
         if status.Code(err) == codes.NotFound {
             return false, nil
         }
-        return false, fmt.Errorf("Error getting cluster: %v", err)
+        return false, fmt.Errorf("error getting cluster: %v", err)
     }
 
     return true, nil

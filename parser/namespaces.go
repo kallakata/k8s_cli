@@ -50,7 +50,7 @@ func ListNamespaces(ctx string) ([]model.Ns, *kubernetes.Clientset, error) {
 	}
 	namespaces, err := clientset.CoreV1().Namespaces().List(context.Background(), metav1.ListOptions{})
 	if err != nil {
-		err = fmt.Errorf("error getting namespaces: %v\n", err)
+		fmt.Printf("error getting namespaces: %v\n", err)
 		return nil, nil, err
 	}
 	if err != nil {

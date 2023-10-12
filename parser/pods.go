@@ -53,7 +53,7 @@ func ListPods(ns string, ctx string) ([]model.Pod, *kubernetes.Clientset, error)
 
 	pods, err := clientset.CoreV1().Pods(ns).List(context.Background(), metav1.ListOptions{})
 	if err != nil {
-		err = fmt.Errorf("error getting pods: %v\n", err)
+		fmt.Printf("Error getting pods: %v\n", err)
 		return nil, nil, err
 	}
 	if err != nil {
