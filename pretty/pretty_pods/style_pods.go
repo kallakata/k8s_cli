@@ -6,18 +6,18 @@ import (
 	"github.com/evertras/bubble-table/table"
 	"github.com/kallakata/k8s_cli/model"
 	"github.com/charmbracelet/bubbles/spinner"
-	"fmt"
+	"github.com/fatih/color"
 	"time"
 )
 
-var (
-	styleSubtle = lipgloss.NewStyle().Foreground(lipgloss.Color("#ff5733"))
+// var (
+// 	styleSubtle = lipgloss.NewStyle().Foreground(lipgloss.Color("#ff5733"))
 
-	styleBase = lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#ff5733")).
-			BorderForeground(lipgloss.Color("#ff5733")).
-			Align(lipgloss.Right)
-)
+// 	styleBase = lipgloss.NewStyle().
+// 			Foreground(lipgloss.Color("#ff5733")).
+// 			BorderForeground(lipgloss.Color("#ff5733")).
+// 			Align(lipgloss.Right)
+// )
 
 const (
 	columnKeyPod    = "pod"
@@ -105,11 +105,11 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c", "q":
-			fmt.Printf("\nExiting...\n\n")
+			color.Magenta("\nExiting...\n\n")
 			time.Sleep(1 * time.Second)
 			cmds = append(cmds, tea.Quit)
 		case "enter":
-			m.spinner, cmd = m.spinner.Update(msg)
+			// m.spinner, cmd = m.spinner.Update(msg)
 			cmds = append(cmds, m.spinner.Tick)
 			m.spinner.View()
 			return m, tea.Batch(cmds...)
@@ -129,15 +129,8 @@ func (m Model) View() string {
 	// body.WriteString(m.table.View())
 
 	// return body.String()
-	highlightedRow := m.table.HighlightedRow()
 
-	footerText := fmt.Sprintf(
-		"Pg. %d/%d \n Currently looking at context: %s",
-		m.table.CurrentPage(),
-		m.table.MaxPages(),
-		highlightedRow.Data[columnKeyCtx],
-	)
-	m.table = m.table.WithStaticFooter(footerText)
+	footer := m.table.HighlightedRow().Data[columnKeyCtx].(string)
 	selected := m.table.HighlightedRow().Data[columnKeyPod].(string)
 	rq_cpu := m.table.HighlightedRow().Data[columnKeyCPUreq].(string)
 	rq_mem := m.table.HighlightedRow().Data[columnKeyMemReq].(string)
@@ -151,9 +144,13 @@ func (m Model) View() string {
 		lipgloss.NewStyle().Foreground(lipgloss.Color("#77d5dd")).Render("Pod: "+selected),
 		lipgloss.NewStyle().Foreground(lipgloss.Color("#77d5dd")).Render("Image: "+image),
 		lipgloss.NewStyle().Foreground(lipgloss.Color("#ff5733")).Render("Requests CPU: "+rq_cpu, "/", "Limits CPU: "+lim_cpu),
-		lipgloss.NewStyle().Foreground(lipgloss.Color("#ff5733")).Render("Requests Mem: "+rq_mem, "/", "Limits Mem: "+lim_mem),
+		lipgloss.NewStyle().Foreground(lipgloss.Color("#ff5733")).Render("Requests Mem: "+rq_mem, "/", "Limits Mem: "+lim_mem + "\n"),
 		m.table.View(),
 	) + "\n"
+	viewH := lipgloss.JoinVertical(
+		lipgloss.Right,
+		lipgloss.NewStyle().Foreground(lipgloss.Color("#42d303")).Render("Looking at context: "+footer),
+	) + "\n"
 
-	return lipgloss.NewStyle().MarginLeft(1).Render(view)
+	return lipgloss.NewStyle().MarginLeft(1).Render(view, viewH)
 }
