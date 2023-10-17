@@ -1,18 +1,18 @@
 package pretty_ns
 
 import (
-	// "log"
-	"strings"
-
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/evertras/bubble-table/table"
 	"github.com/kallakata/k8s_cli/model"
+	"github.com/fatih/color"
+	"time"
 )
 
 const (
 	columnKeyNamespace = "namespace"
 	columnKeyContext   = "context"
+	columnKeyPods = "pods"
 )
 
 type Model struct {
@@ -26,10 +26,10 @@ func NewModel(items []model.Ns, ctx string) Model {
 			WithStyle(lipgloss.NewStyle().
 				Foreground(lipgloss.Color("#ff0")).
 				Align(lipgloss.Center)),
-		table.NewColumn(columnKeyContext, "Context", 50).
-			WithFiltered(false).
+		table.NewColumn(columnKeyPods, "Pods", 40).
+			WithFiltered(true).
 			WithStyle(lipgloss.NewStyle().
-				Faint(true).
+				Foreground(lipgloss.Color("#dd77d5")).
 				Align(lipgloss.Center)),
 	}
 
@@ -39,6 +39,7 @@ func NewModel(items []model.Ns, ctx string) Model {
 		rowData := table.RowData{
 			columnKeyNamespace: item.Namespace,
 			columnKeyContext:   ctx,
+			columnKeyPods: 		item.Pods,
 		}
 		row := table.NewRow(rowData)
 		rows = append(rows, row)
@@ -71,6 +72,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c", "q":
+			color.Magenta("\nExiting...\n\n")
+			time.Sleep(1 * time.Second)
 			cmds = append(cmds, tea.Quit)
 		}
 
@@ -80,12 +83,18 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) View() string {
-	body := strings.Builder{}
+	footer := m.table.HighlightedRow().Data[columnKeyContext].(string)
 
-	body.WriteString("List of namespaces in context.\n\n" +
-		"| Currently filter by Namespace, press / + letters to start filtering, and escape to clear filter. |\n| Press q or ctrl+c to quit | \n\n")
+	view := lipgloss.JoinVertical(
+		lipgloss.Left,
+		lipgloss.NewStyle().Foreground(lipgloss.Color("#03a1d3")).Render("| Press / + letters to start filtering by Namespace, and escape to clear filter. | \n"),
+		lipgloss.NewStyle().Foreground(lipgloss.Color("#42d303")).Render("Press q or ctrl+c to quit\n\n"),
+		m.table.View(),
+	) + "\n"
+	viewH := lipgloss.JoinVertical(
+		lipgloss.Right,
+		lipgloss.NewStyle().Foreground(lipgloss.Color("#42d303")).Render("Looking at context: "+footer),
+	) + "\n"
 
-	body.WriteString(m.table.View())
-
-	return body.String()
+	return lipgloss.NewStyle().MarginLeft(1).Render(view, viewH)
 }
