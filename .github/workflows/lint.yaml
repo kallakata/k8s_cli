@@ -15,6 +15,7 @@ jobs:
     steps:
       - name: Get packages
         run: |
+          pwd
           go env -w GO111MODULE=off
           go get ./...
       - uses: actions/checkout@v2
