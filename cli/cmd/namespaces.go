@@ -4,7 +4,6 @@ import (
 	"github.com/fatih/color"
 	"github.com/kallakata/k8s_cli/parser"
 	"github.com/spf13/cobra"
-	"os"
 )
 
 var namespacesCmd = &cobra.Command{
@@ -15,9 +14,8 @@ var namespacesCmd = &cobra.Command{
 		ctx := cmd.Flags().Lookup("context").Value.String()
 
 		if len(ctx) == 0 {
-			color.Red("\nNo context specified!\n\n")
-			cmd.Help()
-			os.Exit(0)
+			color.Red("\nNo context specified!\nUsing current context.\n\n")
+			parser.ListNamespaces(ctx)
 		} else {
 			parser.ListNamespaces(ctx)
 		}
