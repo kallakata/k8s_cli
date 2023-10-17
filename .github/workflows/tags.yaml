@@ -1,4 +1,4 @@
-name: Bump version
+name: Tags
 on:
   push:
     branches:
@@ -15,8 +15,14 @@ jobs:
         fetch-depth: '0'
 
     - name: Bump version and push tag
+      id: tags
       uses: anothrNick/github-tag-action@1.64.0 
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
         WITH_V: true
         DEFAULT_BUMP: 'patch'
+
+    - uses: ncipollo/release-action@v1
+      with:
+        artifacts: "release.tar.gz,foo/*.txt"
+        tag: ${{ steps.tags.outputs.new_tag }}
