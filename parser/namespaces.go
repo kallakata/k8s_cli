@@ -58,15 +58,21 @@ func ListNamespaces(ctx string) ([]model.Ns, *kubernetes.Clientset, error) {
 	}
 	var items []model.Ns
 	for _, namespace := range namespaces.Items {
+        pods, err := clientset.CoreV1().Pods(namespace.Name).List(context.Background(), metav1.ListOptions{})
+        if err != nil {
+            fmt.Printf("Error getting pods in namespace %s: %v\n", namespace.Name, err)
+            continue
+        }
 		item := model.Ns{
 			Namespace: namespace.Name,
+            Pods: len(pods.Items),
 		}
 		items = append(items, item)
 	}
 
 	p := tea.NewProgram(pretty_ns.NewModel(items, ctx))
-	fmt.Printf("========== Getting namespaces ==========\n\n")
-	time.Sleep(2 * time.Second)
+	fmt.Printf("========== | Getting namespaces | ==========\n\n")
+	time.Sleep(1 * time.Second)
 	p.Run()
 
 	return items, clientset, nil

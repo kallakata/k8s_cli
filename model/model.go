@@ -2,6 +2,7 @@ package model
 
 type Ns struct {
 	Namespace string
+	Pods int
 }
 
 type Pod struct {
