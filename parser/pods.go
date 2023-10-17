@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/fatih/color"
 	"github.com/kallakata/k8s_cli/model"
 	"github.com/kallakata/k8s_cli/pretty/pretty_pods"
 	"github.com/kallakata/k8s_cli/prompt/prompt_pods"
@@ -77,6 +78,7 @@ func ListPods(ns string, ctx string) ([]model.Pod, *kubernetes.Clientset, error)
 			}
 			items = append(items, item)
 		}
+		color.Green("\nListing in all namespaces...\n")
 	} else {
 		for _, pod := range pods.Items {
 			item := model.Pod{
@@ -96,7 +98,7 @@ func ListPods(ns string, ctx string) ([]model.Pod, *kubernetes.Clientset, error)
 
 	p := tea.NewProgram(pretty_pods.NewModel(items, ctx, ns))
 	fmt.Printf("\n\n========== | Getting pods | ==========\n\n")
-	time.Sleep(2 * time.Second)
+	time.Sleep(1 * time.Second)
 	p.Run()
 
 	return items, clientset, nil
