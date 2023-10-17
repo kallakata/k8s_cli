@@ -10,8 +10,10 @@ jobs:
     name: lint
     runs-on: ubuntu-latest
     steps:
+      - name: Get packages
+        run: go get ./...
       - uses: actions/checkout@v2
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
-          version: v1.51.1
+          version: v1.21.0
