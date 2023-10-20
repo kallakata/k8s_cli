@@ -1,7 +1,6 @@
 package auth
 
 import (
-	// "github.com/kallakata/k8s_cli/auth"
 	"fmt"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
