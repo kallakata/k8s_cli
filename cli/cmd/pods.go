@@ -6,7 +6,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// podsCmd represents the pods command
 var podsCmd = &cobra.Command{
 	Use:     "list-pods",
 	Aliases: []string{"pods"},
@@ -16,32 +15,22 @@ var podsCmd = &cobra.Command{
 		ns := cmd.Flags().Lookup("namespace").Value.String()
 
 		switch {
-			case len(ctx) == 0 && len(ns) == 0:
-				color.Red("\nNo context specified!\nUsing current context.\n\n")
-				parser.ListPodsUsingPrompt("")
-			case len(ns) != 0 && len(ctx) != 0:
-				parser.ListPods(ns, ctx)
-			case len(ns) != 0 && len(ctx) == 0:
-				color.Red("\nNo context specified!\nUsing current context.\n\n")
-				parser.ListPods(ns, "")
-			case len(ns) == 0 && len(ctx) != 0:
-				parser.ListPodsUsingPrompt(ctx)
+		case len(ctx) == 0 && len(ns) == 0:
+			color.Red("\nNo context specified!\nUsing current context.\n\n")
+			parser.ListPodsUsingPrompt("")
+		case len(ns) != 0 && len(ctx) != 0:
+			parser.ListPods(ns, ctx)
+		case len(ns) != 0 && len(ctx) == 0:
+			color.Red("\nNo context specified!\nUsing current context.\n\n")
+			parser.ListPods(ns, "")
+		case len(ns) == 0 && len(ctx) != 0:
+			parser.ListPodsUsingPrompt(ctx)
 		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(podsCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// podsCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// podsCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	podsCmd.Flags().String("context", "", "(Optional) A context to list in.\nIf missing, a default one will be used.")
 	podsCmd.Flags().String("namespace", "", "(Optional) A namespace to list in.\nIf missing, you will be prompted")
 }
