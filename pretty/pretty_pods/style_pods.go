@@ -1,23 +1,14 @@
 package pretty_pods
 
 import (
+	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/evertras/bubble-table/table"
-	"github.com/kallakata/k8s_cli/model"
-	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/fatih/color"
+	"github.com/kallakata/k8s_cli/model"
 	"time"
 )
-
-// var (
-// 	styleSubtle = lipgloss.NewStyle().Foreground(lipgloss.Color("#ff5733"))
-
-// 	styleBase = lipgloss.NewStyle().
-// 			Foreground(lipgloss.Color("#ff5733")).
-// 			BorderForeground(lipgloss.Color("#ff5733")).
-// 			Align(lipgloss.Right)
-// )
 
 const (
 	columnKeyPod    = "pod"
@@ -28,11 +19,11 @@ const (
 	columnKeyCPUlim = "CPU limits"
 	columnKeyMemReq = "Mem requests"
 	columnKeyMemLim = "Mem limits"
-	columnKeyImage 	= "Image"
+	columnKeyImage  = "Image"
 )
 
 type Model struct {
-	table table.Model
+	table   table.Model
 	spinner spinner.Model
 }
 
@@ -69,7 +60,7 @@ func NewModel(items []model.Pod, ctx string, ns string) Model {
 			columnKeyCPUlim: item.CPULim,
 			columnKeyMemReq: item.MemReq,
 			columnKeyMemLim: item.MemLim,
-			columnKeyImage: item.Image,
+			columnKeyImage:  item.Image,
 			columnKeyCtx:    ctx,
 		}
 		row := table.NewRow(rowData)
@@ -121,14 +112,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) View() string {
-	// body := strings.Builder{}
-
-	// body.WriteString("List of Pods in namespace and context.\n\n" +
-	// 	"| Currently filter by Pod, Status and Namespace, press / + letters to start filtering, and escape to clear filter. |\n| Press q or ctrl+c to quit | \n\n")
-
-	// body.WriteString(m.table.View())
-
-	// return body.String()
 
 	footer := m.table.HighlightedRow().Data[columnKeyCtx].(string)
 	selected := m.table.HighlightedRow().Data[columnKeyPod].(string)
@@ -144,7 +127,7 @@ func (m Model) View() string {
 		lipgloss.NewStyle().Foreground(lipgloss.Color("#77d5dd")).Render("Pod: "+selected),
 		lipgloss.NewStyle().Foreground(lipgloss.Color("#77d5dd")).Render("Image: "+image),
 		lipgloss.NewStyle().Foreground(lipgloss.Color("#ff5733")).Render("Requests CPU: "+rq_cpu, "/", "Limits CPU: "+lim_cpu),
-		lipgloss.NewStyle().Foreground(lipgloss.Color("#ff5733")).Render("Requests Mem: "+rq_mem, "/", "Limits Mem: "+lim_mem + "\n"),
+		lipgloss.NewStyle().Foreground(lipgloss.Color("#ff5733")).Render("Requests Mem: "+rq_mem, "/", "Limits Mem: "+lim_mem+"\n"),
 		m.table.View(),
 	) + "\n"
 	viewH := lipgloss.JoinVertical(

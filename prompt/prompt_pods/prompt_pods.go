@@ -1,8 +1,5 @@
 package prompt_pods
 
-// A simple program demonstrating the text input component from the Bubbles
-// component library.
-
 import (
 	"fmt"
 	"github.com/charmbracelet/bubbles/textinput"
@@ -46,7 +43,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.Type {
 		case tea.KeyEnter:
-			// Capture the entered namespace and return it as a new model
 			namespace := m.textInput.Value()
 			return model{
 				textInput: m.textInput,
@@ -58,7 +54,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		}
 
-	// We handle errors just like any other message
 	case errMsg:
 		m.err = msg
 		return m, nil
