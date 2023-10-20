@@ -4,15 +4,15 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/evertras/bubble-table/table"
-	"github.com/kallakata/k8s_cli/model"
 	"github.com/fatih/color"
+	"github.com/kallakata/k8s_cli/model"
 	"time"
 )
 
 const (
 	columnKeyNamespace = "namespace"
 	columnKeyContext   = "context"
-	columnKeyPods = "pods"
+	columnKeyPods      = "pods"
 )
 
 type Model struct {
@@ -39,7 +39,7 @@ func NewModel(items []model.Ns, ctx string) Model {
 		rowData := table.RowData{
 			columnKeyNamespace: item.Namespace,
 			columnKeyContext:   ctx,
-			columnKeyPods: 		item.Pods,
+			columnKeyPods:      item.Pods,
 		}
 		row := table.NewRow(rowData)
 		rows = append(rows, row)
