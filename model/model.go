@@ -2,18 +2,18 @@ package model
 
 type Ns struct {
 	Namespace string
-	Pods int
+	Pods      int
 }
 
 type Pod struct {
 	Pod       string
 	Status    string
 	Namespace string
-	CPUReq string
-	MemReq  string
-	CPULim string
-	MemLim string
-	Image string
+	CPUReq    string
+	MemReq    string
+	CPULim    string
+	MemLim    string
+	Image     string
 	Context   string
 }
 
@@ -24,13 +24,13 @@ type NodepoolStatus struct {
 }
 
 const (
-    StatusUnspecified ClusterStatus = iota
-    Provisioning
-    Running
-    Reconciling
-    Stopping
-    Error
-    Degraded
+	StatusUnspecified ClusterStatus = iota
+	Provisioning
+	Running
+	Reconciling
+	Stopping
+	Error
+	Degraded
 )
 
 type Cluster struct {
@@ -41,8 +41,16 @@ type Cluster struct {
 }
 
 type Nodepool struct {
-	Nodepool    string
-	Status      string
-	Version     string
-	NodeCount  int
+	Nodepool  string
+	Status    string
+	Version   string
+	NodeCount int
+}
+
+type AzureCluster struct {
+	Cluster  string `json:"cluster,omitempty"`
+	Version  string `json:"version,omitempty"`
+	Status   string `json:"status,omitempty"`
+	Location string `json:"location,omitempty"`
+	Identity string `json:"identity,omitempty"`
 }
